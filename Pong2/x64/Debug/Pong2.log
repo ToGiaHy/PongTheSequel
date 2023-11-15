@@ -1,0 +1,6 @@
+﻿  win32_platform.cpp
+C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(5,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(14,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(2,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(12,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+  Pong2.vcxproj -> C:\Users\Hy\source\repos\Pong2\x64\Debug\Pong2.exe

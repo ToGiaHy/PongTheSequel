@@ -1,3 +1,5 @@
+#include "utilities.cpp"
+#include <windows.h>
 
 global_variable bool running = true;
 
@@ -11,9 +13,11 @@ struct Render_background {
 global_variable Render_background render_background;
 
 
+#include "controls.cpp"
+#include "renderer.cpp"
+
 WNDPROC Wndproc;
 
-//window callback function to render the background
 LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
@@ -49,5 +53,5 @@ LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-
-}
+	
+};
