@@ -11,6 +11,7 @@ enum {
 	BUTTON_A,
 	BUTTON_D,
 	BUTTON_ENTER,
+	BUTTON_COUNT,
 };
 
 struct Input {
