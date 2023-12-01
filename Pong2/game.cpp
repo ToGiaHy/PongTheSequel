@@ -8,7 +8,7 @@
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
 
 //float player_pos_x = 0.f;
-float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp;
+float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_3_ddp = 0;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
 float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 1;
@@ -67,6 +67,7 @@ int random;
 int random2;
 int countLong;
 int speed;
+bool slowMo;
 
 struct Answer {
 	bool question;   // Text representing the answer option
@@ -144,14 +145,14 @@ internal void gameplay(Input* input, float dt) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
 	float player_1_ddp = 0.f;
-	if (!enemy_is_ai) {
-		if (is_down(BUTTON_UP)) player_1_ddp += 2000;
-		if (is_down(BUTTON_DOWN)) player_1_ddp -= 2000;
-	}
-	else {
 		player_1_ddp = (ball_p_y - player_1_p) * 100;
 		if (player_1_ddp > 1300) player_1_ddp = 1300;
 		if (player_1_ddp < -1300) player_1_ddp = -1300;
+
+	float player_2_ddp = 0.f;
+	if (answer1.isCorrect == true) {
+		if (is_down(BUTTON_W)) player_2_ddp += 5000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
 	}
 
 	float player_2_ddp = 0.f;
