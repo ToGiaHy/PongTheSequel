@@ -412,3 +412,30 @@ draw_number(int number, float x, float y, float size, u32 color) {
 
 	}
 }
+
+void render_ascii_art(const char* ascii_art[], int width, int height, float x, float y, float size, u32 color, u32 secondColor, u32 thirdColor) {
+	float half_size = size * .5f;
+	float original_y = y;
+
+	for (int i = 0; i < height; ++i) {
+		const char* row = ascii_art[i];
+		float original_x = x;
+
+		while (*row) {
+			if (*row == '0') {
+				draw_rect(x, y, half_size, half_size, color);
+			}
+			if (*row == '1') {
+				draw_rect(x, y, half_size, half_size, secondColor);
+			}
+			if (*row == '2') {
+				draw_rect(x, y, half_size, half_size, thirdColor);
+			}
+
+			x += size;
+			row++;
+		}
+		y -= size;
+		x = original_x;
+	}
+}
