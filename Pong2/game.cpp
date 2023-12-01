@@ -15,6 +15,12 @@ float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 1;
 float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 1;
 
 int player_1_score, player_2_score;
+struct Question {
+	const char* questionText;
+	std::vector<const char*> answerOptions;
+	const char* correctAnswer;
+};
+
 
 internal void
 simulate_player(float* p, float* dp, float ddp, float dt) {
@@ -76,6 +82,39 @@ struct Answer {
 	Answer(bool question, bool isCorrect) : question(question), isCorrect(isCorrect) {}
 };
 Answer answer1(false, false);
+std::map<int, Question> questionAlgo = {
+		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
+		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
+		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+};
+std::map<int, Question> questionAlgo1 = {
+		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
+		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}}
+};
+std::map<int, Question> questionAlgo2 = {
+		{0, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{1, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+};
+std::map<int, Question> questionSEPM = {
+		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
+		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
+		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+};
+std::map<int, Question> questionBITS = {
+		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
+		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
+		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+};
+std::map<int, Question> questionLeadership = {
+		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
+		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
+		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+};
+
 internal void testQuestion(Input* input, int questionIndex) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
