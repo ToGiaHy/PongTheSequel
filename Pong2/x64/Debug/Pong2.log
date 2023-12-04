@@ -1,2 +1,22 @@
-﻿  LINK : C:\Users\Hy\source\repos\Pong2\x64\Debug\Pong2.exe not found or not built by the last incremental link; performing full link
+﻿  win32_platform.cpp
+C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(4,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(13,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(2,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(12,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(27,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(29,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(45,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(55,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(56,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(57,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(58,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(289,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(321,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(18,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(25,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(41,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(119,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(183,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(319,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(321,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
   Pong2.vcxproj -> C:\Users\Hy\source\repos\Pong2\x64\Debug\Pong2.exe

@@ -187,7 +187,7 @@ internal void gameplay(Input* input, float dt) {
 	if (player_1_score == 5 && answer1.question == false) {
 		countLong = 1;
 		slowMo = true;
-		testQuestion(input, random, dt);
+		testQuestion(input, random);
 	}
 	float player_1_ddp = 0.f;
 
@@ -324,14 +324,14 @@ internal void simulate_game(Input* input, float dt) {
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
 	current_gamemode = GM_GAMEPLAY;
 	if (current_gamemode == GM_GAMEPLAY) {
-		if (player_1_score == 5) {
-			testQuestion(input, random);
-			if (answer1.question == true) {
-				gameplay(input, dt);
-			}
+		gameplay(input, dt);
+		if (player_1_score >= 10) {
+			draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
+			draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
 		}
-		else {
-			gameplay(input, dt);
+		else if (player_2_score >= 10) {
+			draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
+			draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
 		}
 	}
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
