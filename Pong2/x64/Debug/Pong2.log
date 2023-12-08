@@ -13,10 +13,10 @@ C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(58,9): warning C4244: 'initial
 C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(289,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
 C:\Users\Hy\source\repos\Pong2\Pong2\renderer.cpp(321,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
 C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(18,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(19,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(35,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(79,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(143,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(216,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(218,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(25,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(41,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(119,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(183,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(319,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(321,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
   Pong2.vcxproj -> C:\Users\Hy\source\repos\Pong2\x64\Debug\Pong2.exe
