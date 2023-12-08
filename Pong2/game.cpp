@@ -51,6 +51,7 @@ aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 enum Gamemode {
 	GM_MENU,
 	GM_GAMEPLAY,
+	GM_MULTIPLAYER,
 	GM_EXTRA_GAMEPLAY,
 	GM_UI,
 	GM_WINSCREEN,
@@ -314,6 +315,71 @@ internal void gameplay(Input* input, float dt) {
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0xff0000);
 	}
 }
+int pointerX;
+int pointerY;
+// UserUI function
+internal void userUI(Input* input) {
+
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
+	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xffffff);
+	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
+		pointerX = !pointerX;
+	}
+	if (pressed(BUTTON_W)) {
+		pointerY = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		pointerY = 1;
+	}
+
+	if (pointerY == 0) {
+		if (pointerX == 0) {
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0xff0000);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
+			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
+			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			if (pressed(BUTTON_ENTER)) {
+				random = rand() % 4;
+				random2 = rand() % 2;
+				current_gamemode = GM_GAMEPLAY;
+				enemy_is_ai = hot_button ? 0 : 1;
+			}
+		}
+		else {
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0xff0000);
+			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
+			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			if (pressed(BUTTON_ENTER)) {
+				random = rand() % 4;
+				random2 = rand() % 2;
+				current_gamemode = GM_MULTIPLAYER;
+				enemy_is_ai = hot_button ? 0 : 1;
+			}
+		}
+	}
+	else if (pointerY == 1) {
+		if(pointerX == 0){
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
+			draw_text("EXTRA", -80, -20, 1, 0xff0000);
+			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			if (pressed(BUTTON_ENTER)) {
+				question = false;
+				random = rand() % 4;
+				random2 = rand() % 4;
+				current_gamemode = GM_EXTRA_GAMEPLAY;
+			}
+		}
+		else {
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
+			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
+			draw_text("TUTORIAL", 20, -20, 1, 0xff0000);
+		}
+	}
+}
 
 
 internal void extraGameplay(Input* input, float dt) {
@@ -322,7 +388,6 @@ internal void simulate_game(Input* input, float dt) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
-	current_gamemode = GM_GAMEPLAY;
 	if (current_gamemode == GM_GAMEPLAY) {
 		gameplay(input, dt);
 		if (player_1_score >= 10) {
@@ -336,64 +401,8 @@ internal void simulate_game(Input* input, float dt) {
 	}
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
 	}
-}
-
-
-
-
-
-// UserUI function
-internal void userUI(Input* input) {
-
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
-	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xffffff);
-	if (pressed(BUTTON_LEFT) || pressed(BUTTON_RIGHT)) {
-		hot_button = !hot_button;
-	}
-	if (pressed(BUTTON_J)) {
-		up_down = !up_down;
-	}
-
-	if (up_down == 0) {
-		if (hot_button == 0) {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xff0000);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
-		}
-		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xff0000);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
-		}
-		if (pressed(BUTTON_ENTER)) {
-			random = rand() % 4;
-			random2 = rand() % 2;
-			current_gamemode = GM_GAMEPLAY;
-			enemy_is_ai = hot_button ? 0 : 1;
-		}
-	}
 	else {
-		if (hot_button == 0) {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xff0000);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
-		}
-		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xff0000);
-		}
-		if (pressed(BUTTON_ENTER)) {
-			question = false;
-			random = rand() % 4;
-			random2 = rand() % 4;
-			current_gamemode = GM_EXTRA_GAMEPLAY;
-		}
+		userUI(input);
 	}
 }
 
