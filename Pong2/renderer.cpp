@@ -622,3 +622,57 @@ const char* undercaseletters[][7] = {
 	" 0  ",
 	"0000",
 };
+void render_ascii_art(const char* ascii_art[], int width, int height, float x, float y, float size, u32 color, u32 secondColor, u32 thirdColor) {
+	float half_size = size * .5f;
+	float original_y = y;
+
+	for (int i = 0; i < height; ++i) {
+		const char* row = ascii_art[i];
+		float original_x = x;
+
+		while (*row) {
+			if (*row == '0') {
+				draw_rect(x, y, half_size, half_size, color);
+			}
+			if (*row == '1') {
+				draw_rect(x, y, half_size, half_size, secondColor);
+			}
+			if (*row == '2') {
+				draw_rect(x, y, half_size, half_size, thirdColor);
+			}
+
+			x += size;
+			row++;
+		}
+		y -= size;
+		x = original_x;
+	}
+}
+
+void draw_lowercase_letter(const char* text, float x, float y, float size, u32 color) {
+	float half_size = size * .5f;
+	float original_y = y;
+
+	while (*text) {
+		if (*text != 32 && *text >= 'a' && *text <= 'z') {
+			const char** letter = undercaseletters[*text - 'a'];
+			float original_x = x;
+
+			for (int i = 0; i < 7; i++) {
+				const char* row = letter[i];
+				while (*row) {
+					if (*row == '0') {
+						draw_rect(x, y, half_size, half_size, color);
+					}
+					x += size;
+					row++;
+				}
+				y -= size;
+				x = original_x;
+			}
+		}
+		text++;
+		x += size * 6.f; // Adjust spacing between characters
+		y = original_y;
+	}
+}
