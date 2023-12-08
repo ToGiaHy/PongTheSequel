@@ -284,18 +284,26 @@ const char* letters[][7] = {
 	" 0",
 	"0",
 	"0",
+
+	" 000 ",
+	"0   0",
+	"   0 ",
+	"  0  ",
+	" 0   ",
+	"     ",
+	" 0   "
 };
 
-internal void
-draw_text(const char* text, float x, float y, float size, u32 color) {
+internal void draw_text(const char* text, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
 	float original_y = y;
 
 	while (*text) {
 		if (*text != 32) {
 			const char** letter;
-			if (*text == 47) letter = letters[27];
-			else if (*text == 46) letter = letters[26];
+			if (*text == 47) letter = letters[27]; // '/' character
+			else if (*text == 46) letter = letters[26]; // '.' character
+			else if (*text == '?') letter = letters[28]; // '?' character
 			else letter = letters[*text - 'A'];
 			float original_x = x;
 

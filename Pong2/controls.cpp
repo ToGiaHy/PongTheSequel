@@ -13,13 +13,12 @@ enum {
 	BUTTON_LEFT,
 	BUTTON_RIGHT,
 	BUTTON_ENTER,
-	BUTTON_J,
-	BUTTON_G,
-	BUTTON_H,
+	BUTTON_I,
+	BUTTON_K,
+	BUTTON_O,
 	BUTTON_N,
 	BUTTON_COUNT,
 };
-
 
 struct Input {
 	Button_state buttons[BUTTON_COUNT];
