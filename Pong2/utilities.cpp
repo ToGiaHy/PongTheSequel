@@ -10,6 +10,7 @@ typedef unsigned long long u64;
 #define global_variable static;
 #define internal static;
 
+//constraints to keep object in window screen
 inline int clamp(int min, int val, int max) {
 	if (val < min) {
 		return min;

@@ -18,9 +18,12 @@ global_variable Render_background render_background;
 #include "game.cpp";
 WNDPROC Wndproc;
 
+
+// Callback function to call window and optimize resolution
 LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
+	//switch between different window states
 	switch (uMsg) {
 	case WM_CLOSE:
 	case WM_DESTROY: {
@@ -52,6 +55,7 @@ LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return result;
 }
 
+//main method
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -83,7 +87,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 		QueryPerformanceFrequency(&perf);
 		performance_frequency = (float)perf.QuadPart;
 	}
-
+	
+	//infinite loop to run the game
 	while (running) {
 		MSG message;
 

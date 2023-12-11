@@ -29,7 +29,7 @@ struct Question {
 	const char* correctAnswer;
 };
 
-
+//Handles constraints for the player in the game
 internal void
 simulate_player(float* p, float* dp, float ddp, float dt) {
 	ddp -= *dp * 10.f;
@@ -46,6 +46,7 @@ simulate_player(float* p, float* dp, float ddp, float dt) {
 	}
 }
 
+//Handles collision detection
 internal bool
 aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 	float p2x, float p2y, float hs2x, float hs2y) {
@@ -55,7 +56,7 @@ aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 		p1y + hs1y < p2y + hs2y);
 }
 
-
+// Different game states to use in simulate_game
 enum Gamemode {
 	GM_MENU,
 	GM_GAMEPLAY,
@@ -69,6 +70,7 @@ enum Gamemode {
 	GM_LOADING,
 };
 
+//global variables for use in methods
 Gamemode current_gamemode;
 int hot_button;
 int up_down;
@@ -89,6 +91,7 @@ int speed;
 int questionType;
 int loadingTime;
 
+//random number generator
 int getRandomNumber(int range) {
 	// Seed the random number generator using current time
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -97,7 +100,7 @@ int getRandomNumber(int range) {
 	return std::rand() % range; // Modulus 4 ensures numbers between 0 and 3 (inclusive)
 }
 
-
+//struct for answer used in test question
 struct Answer {
 	bool question;   // Text representing the answer option
 	bool isCorrect;     // Indicates whether the answer is correct or not
@@ -108,42 +111,44 @@ struct Answer {
 
 Answer answer1(false, false);
 static std::map<int, Question> questionAlgo = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
+		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}},
+		{2, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
+		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
 static std::map<int, Question> questionAlgo1 = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}}
+		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
+		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}}
 };
 static std::map<int, Question> questionAlgo2 = {
-		{0, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{1, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+		{0, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
+		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
 static std::map<int, Question> questionSEPM = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+		{0, {"WHAT IS ONE OF THE PROCESS IN PM ?", {"INITIATING", "BLAMING", "WORK ALONE"}, "INITIATING"}},
+		{1, {"ONE OF THE PROJECT FOUNDATIONS", {"SCOPE", "MONEY", "SPACE"}, "SCOPE"}},
+		{2, {"WHAT IS A PROJECT NOT ?", {"REPETITIVE", "TEAMWORK", "PROFESSIONAL"}, "REPETITIVE"}},
+		{3, {"NOT A PROJECT", {"ACCOUNTING", "ENGINEERING", "PRODUCT DEV"}, "ACCOUNTING"}}
 };
 static std::map<int, Question> questionBITS = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+		{0, {"TEAMWORK ISSUES THAT CAN HAPPEN", {"UNCLEAR GOALS", "FIST FIGHTING", "STABBING"}, "UNCLEAR GOALS"}},
+		{1, {"IS BUDGET A REQUIRED PART OF THE PROPOSAL ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{2, {"WHY DO YOU NEED TO TEST SOFTWARE?", {"FUN", "ENGAGING", "SECURITY"}, "SECURITY"}},
+		{3, {"GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
 };
 static std::map<int, Question> questionLeadership = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+		{0, {"WHAT LEADERSHIP STYLE DOES NOT INVOLVE TEAMMATES DECISIONS ?", {"AUTOCRATIC", "DEMOCRATIC", "SITUATIONAL"}, "AUTOCRATIC"}},
+		{1, {"EMOTIONAL INTELLIGENCE IS REQUIRED FOR LEADERS", {"YES", "NO", "NEVER"}, "YES"}},
+		{2, {"NOT A GOOD LEADER TRAIT", {"INTEGRITY", "MICROMANAGEMENT", "EMPATHY"}, "MICROMANAGEMENT"}},
+		{3, {"SKILL FOR A SUCCESSFUL LEADERSHIP", {"COMMUNICATION", "WORKING ALONE", "SHUTTING UP"}, "COMMUNICATION"}}
 };
 int pointerX;
 int pointerY;
+
+//Jeopardy UI to pick categories
 internal void jeopardy(Input* input) {
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
 		pointerX = !pointerX;
 	}
@@ -156,10 +161,10 @@ internal void jeopardy(Input* input) {
 
 	if (pointerY == 0) {
 		if (pointerX == 0) {
-			draw_text("ALGO", -80, -10, 1, 0xff0000);
-			draw_text("SEPM", 20, -10, 0.7f, 0xaaaaaa);
-			draw_text("BITS", -80, -20, 0.7f, 0xaaaaaa);
-			draw_text("LEADERSHIP", 20, -20, 0.7f, 0xaaaaaa);
+			draw_text("ALGO", -80, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
@@ -167,11 +172,12 @@ internal void jeopardy(Input* input) {
 			}
 		}
 		else {
-			draw_text("ALGO", -80, -10, 0.7f, 0xaaaaaa);
-			draw_text("SEPM", 20, -10, 1, 0xff0000);
-			draw_text("BITS", -80, -20, 0.7f, 0xaaaaaa);
-			draw_text("LEADERSHIP", 20, -20, 0.7f, 0xaaaaaa);
+			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
+			draw_text("SEPM", 20, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+			
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
@@ -180,22 +186,24 @@ internal void jeopardy(Input* input) {
 	}
 	else if (pointerY == 1) {
 		if (pointerX == 0) {
-			draw_text("ALGO", -80, -10, 0.7f, 0xaaaaaa);
-			draw_text("SEPM", 20, -10, 0.7f, 0xaaaaaa);
-			draw_text("BITS", -80, -20, 1, 0xff0000);
-			draw_text("LEADERSHIP", 20, -20, 0.7f, 0xaaaaaa);
+			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
+			draw_text("BITS", -80, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+				
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
 			}
 		}
 		else {
-			draw_text("ALGO", -80, -10, 0.7f, 0xaaaaaa);
-			draw_text("SEPM", 20, -10, 0.7f, 0xaaaaaa);
-			draw_text("BITS", -80, -20, 0.7f, 0xaaaaaa);
-			draw_text("LEADERSHIP", 20, -20, 1, 0xff0000);
+			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
+			draw_text("LEADERSHIP", 20, -20, 1, 0x48FFFF);
 			if (pressed(BUTTON_ENTER)) {
+				
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
@@ -207,10 +215,10 @@ internal void jeopardy(Input* input) {
 	}
 }
 
-
+// Test question function to use in the gameplay 
 internal void testQuestion(Input* input, int questionIndex, float dt) {
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x464651);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x000000);
 	std::map<int, Question> questions;
 	if (questionType == 1) {
 		questions = questionAlgo;
@@ -237,7 +245,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		const char* correctAnswer = currentQuestion.correctAnswer;
 
 		// Display the question
-		draw_text(questionText, -80, 30, 1, 0xaaaaaa);
+		draw_text(questionText, -80, 30, 0.75, 0x000000);
 
 		if (pressed(BUTTON_I)) {
 			display = 1;
@@ -251,19 +259,19 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			display = 3;
 		}
 		if (display == 1) {
-			draw_text(answerOptions[0], -80, -10, 1, 0xff0000);
-			draw_text(answerOptions[1], 20, -10, 1, 0xaaaaaa);
-			draw_text(answerOptions[2], -80, -30, 1, 0xaaaaaa);
+			draw_text(answerOptions[0], -80, -10, 1, 0x888888);
+			draw_text(answerOptions[1], 20, -10, 1, 0x000000);
+			draw_text(answerOptions[2], -80, -30, 1, 0x000000);
 		}
 		else if (display == 2) {
-			draw_text(answerOptions[0], -80, -10, 1, 0xaaaaaa); // Display first answer option
-			draw_text(answerOptions[1], 20, -10, 1, 0xff0000); // Display second answer option
-			draw_text(answerOptions[2], -80, -30, 1, 0xaaaaaa); // Display third answer option
+			draw_text(answerOptions[0], -80, -10, 1, 0x000000); // Display first answer option
+			draw_text(answerOptions[1], 20, -10, 1, 0x888888); // Display second answer option
+			draw_text(answerOptions[2], -80, -30, 1, 0x000000); // Display third answer option
 		}
 		else {
-			draw_text(answerOptions[0], -80, -10, 1, 0xaaaaaa); // Display first answer option
-			draw_text(answerOptions[1], 20, -10, 1, 0xaaaaaa); // Display second answer option
-			draw_text(answerOptions[2], -80, -30, 1, 0xff0000); // Display third answer option
+			draw_text(answerOptions[0], -80, -10, 1, 0x000000); // Display first answer option
+			draw_text(answerOptions[1], 20, -10, 1, 0x000000); // Display second answer option
+			draw_text(answerOptions[2], -80, -30, 1, 0x888888); // Display third answer option
 		}
 
 		if (pressed(BUTTON_ENTER)) {
@@ -294,11 +302,12 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		}
 	}
 }
-
+// The main gameplay method 
 internal void gameplay(Input* input, float dt) {
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	bool slowMo = false;
+	//implementation of the testQuestion
 	if (player_1_score == 5 && answer1.question == false) {
 		countLong = 1;
 		slowMo = true;
@@ -312,6 +321,8 @@ internal void gameplay(Input* input, float dt) {
 
 
 	float player_2_ddp = 0.f;
+
+	//Player movement
 	if (answer1.isCorrect == true) {
 		if (is_down(BUTTON_W)) player_2_ddp += 5000;
 		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
@@ -346,7 +357,7 @@ internal void gameplay(Input* input, float dt) {
 		ball_p_y += ball_dp_y * dt;
 		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 0xffffff);
 
-
+		//collision detection implementation
 		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_half_size_x, player_half_size_y)
 			) {
 			ball_p_x = 80 - player_half_size_x - ball_half_size;
@@ -433,7 +444,7 @@ internal void gameplay(Input* input, float dt) {
 internal void userUI(Input* input) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xffffff);
 	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
 		hot_button = !hot_button;
@@ -447,10 +458,10 @@ internal void userUI(Input* input) {
 
 	if (up_down == 0) {
 		if (hot_button == 0) {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xff0000);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0x48FFFF);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
+			draw_text("EXTRA", -80, -20, 1, 0x888888);
+			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				random = rand() % 4;
 				random2 = rand() % 2;
@@ -459,10 +470,10 @@ internal void userUI(Input* input) {
 			}
 		}
 		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xff0000);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0x48FFFF);
+			draw_text("EXTRA", -80, -20, 1, 0x888888);
+			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				random = rand() % 4;
 				random2 = rand() % 2;
@@ -473,10 +484,10 @@ internal void userUI(Input* input) {
 	}
 	else if (up_down == 1) {
 		if(hot_button == 0){
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xff0000);
-			draw_text("TUTORIAL", 20, -20, 1, 0xaaaaaa);
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
+			draw_text("EXTRA", -80, -20, 1, 0x48FFFF);
+			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				question = false;
 				random = rand() % 4;
@@ -485,10 +496,10 @@ internal void userUI(Input* input) {
 			}
 		}
 		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0xaaaaaa);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0xaaaaaa);
-			draw_text("EXTRA", -80, -20, 1, 0xaaaaaa);
-			draw_text("TUTORIAL", 20, -20, 1, 0xff0000);
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
+			draw_text("EXTRA", -80, -20, 1, 0x888888);
+			draw_text("TUTORIAL", 20, -20, 1, 0x48FFFF);
 		}
 	}
 }
@@ -496,6 +507,8 @@ internal void userUI(Input* input) {
 
 internal void extraGameplay(Input* input, float dt) {
 }
+
+//main method called in win main
 internal void simulate_game(Input* input, float dt) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);

@@ -1,4 +1,5 @@
 
+//clear screen function
 internal void clear_screen(unsigned int color) {
 	unsigned int* pixel = (unsigned int*)render_background.memory;
 	for (int y = 0; y < render_background.height; y++) {
@@ -9,6 +10,7 @@ internal void clear_screen(unsigned int color) {
 	}
 }
 
+//draw rectangle in pixels in the main UI
 internal void draw_rect_in_pixels(int x0, int y0, int x1, int y1, u32 color) {
 
 	x0 = clamp(0, x0, render_background.width);
@@ -26,6 +28,7 @@ internal void draw_rect_in_pixels(int x0, int y0, int x1, int y1, u32 color) {
 }
 global_variable float render_scale = 0.01f;
 
+//draw the arena borders around the game
 internal void
 draw_arena_borders(float arena_x, float arena_y, u32 color) {
 	arena_x *= render_background.height * render_scale;
@@ -42,6 +45,7 @@ draw_arena_borders(float arena_x, float arena_y, u32 color) {
 	draw_rect_in_pixels(x1, y0, render_background.width, render_background.height, color);
 }
 
+//draw a rectangle with an increase in size
 internal void draw_rect(float x, float y, float half_size_x, float half_size_y, u32 color) {
 	x *= render_background.height * render_scale;
 	y *= render_background.height * render_scale;
@@ -60,6 +64,7 @@ internal void draw_rect(float x, float y, float half_size_x, float half_size_y, 
 	draw_rect_in_pixels(x0, y0, x1, y1, color);
 }
 
+//uppercase text ascii art
 const char* letters[][7] = {
 	" 00",
 	"0  0",
@@ -294,6 +299,7 @@ const char* letters[][7] = {
 	" 0   "
 };
 
+//draw text method
 internal void draw_text(const char* text, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
 	float original_y = y;
@@ -326,6 +332,7 @@ internal void draw_text(const char* text, float x, float y, float size, u32 colo
 	}
 }
 
+//draw number method
 internal void
 draw_number(int number, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
@@ -420,6 +427,8 @@ draw_number(int number, float x, float y, float size, u32 color) {
 
 	}
 }
+
+//lowercase ascii art
 const char* undercaseletters[][7] = {
 	//undercase
 	"    ", // 'a'
@@ -630,6 +639,8 @@ const char* undercaseletters[][7] = {
 	" 0  ",
 	"0000",
 };
+
+//draw ascii art
 void render_ascii_art(const char* ascii_art[], int width, int height, float x, float y, float size, u32 color, u32 secondColor, u32 thirdColor) {
 	float half_size = size * .5f;
 	float original_y = y;
@@ -657,6 +668,7 @@ void render_ascii_art(const char* ascii_art[], int width, int height, float x, f
 	}
 }
 
+//draw lowercase words
 void draw_lowercase_letter(const char* text, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
 	float original_y = y;

@@ -1,8 +1,10 @@
+//different button states
 struct Button_state {
 	bool is_down;
 	bool changed;
 };
 
+//different buttons enumerations 
 enum {
 	BUTTON_UP,
 	BUTTON_DOWN,
