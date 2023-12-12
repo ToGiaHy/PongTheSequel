@@ -495,7 +495,7 @@ internal void userUI(Input* input) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
-	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xffffff);
+	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xFFFF00);
 	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
 		hot_button = !hot_button;
 	}
@@ -566,18 +566,24 @@ internal void simulate_game(Input* input, float dt) {
 	if (current_gamemode == GM_GAMEPLAY) {
 		gameplay(input, dt);
 		if (player_1_score >= 10) {
-			draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
-			draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
+			current_gamemode = GM_WINSCREEN;
 		}
 		else if (player_2_score >= 10) {
-			draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0xffaa33);
-			draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xff5500);
+			current_gamemode = GM_LOSESCREEN;
 		}
 	}
 	else if (current_gamemode == GM_JEOPARDY) {
 		jeopardy(input);
 	}
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
+	}
+	else if (current_gamemode == GM_WINSCREEN) {
+		clear_screen(0xffaa33);
+		winScreen(input, dt);
+	}
+	else if (current_gamemode == GM_LOSESCREEN) {
+		clear_screen(0xffaa33);
+		loseScreen(input, dt);
 	}
 	else {
 		userUI(input);
