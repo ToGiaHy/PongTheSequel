@@ -440,6 +440,56 @@ internal void gameplay(Input* input, float dt) {
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0xff0000);
 	}
 }
+
+internal void winScreen(Input* input, float dt) {
+
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	draw_text("YOU MURKED THE AI!", -50, 30, 1, 0x8C68FF);
+	draw_text("P", -18, 20, 1, 0x06CFCE);
+	draw_number(1, -13, 17, 1.4, 0x06CFCE);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_N)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+	}
+}
+
+internal void loseScreen(Input* input, float dt) {
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	draw_text("YOU GOT YOUR BACK BLOWN OUT!", -60, 30, 0.75, 0x8C68FF);
+	draw_text("AI", -18, 20, 1, 0xFF0C0C);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_N)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+	}
+}
+
+
 // UserUI function
 internal void userUI(Input* input) {
 
