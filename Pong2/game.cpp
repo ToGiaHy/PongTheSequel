@@ -14,6 +14,8 @@
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
 
+static bool quit = false;
+
 //float player_pos_x = 0.f;
 float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_3_ddp = 0;
 float arena_half_size_x = 85, arena_half_size_y = 45;
@@ -68,6 +70,7 @@ enum Gamemode {
 	GM_WINPLAYER,
 	GM_MULTIPLAYER,
 	GM_LOADING,
+	GM_PAUSE,
 };
 
 //global variables for use in methods
@@ -110,6 +113,81 @@ struct Answer {
 };
 
 Answer answer1(false, false);
+
+float flashingIntervalColor1 = 0.3f; // Change to color2 every 0.3 seconds
+float flashingIntervalColor2 = 0.8f; // Change to color1 every 0.8 seco
+float elapsedTime = 0.0f; // Track time elapsed
+bool useColor1 = true; // Flag to toggle between colors
+
+internal void pressEnterAnimation(float dt) {
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFFFF00; // Bright yellow
+	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime >= flashingIntervalColor1) {
+			useColor1 = false;
+			elapsedTime = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime >= flashingIntervalColor2) {
+			useColor1 = true;
+			elapsedTime = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color2);
+	}
+}
+
+
+// animateUI function
+internal void pressEscapeAnimation(float dt) {
+	float flashingIntervalColor3 = 0.3f; // Change to color2 every 0.3 seconds
+	float flashingIntervalColor4 = 0.8f; // Change to color1 every 0.8 seco
+	float elapsedTime1 = 0.0f; // Track time elapsed
+	bool useColor2 = true; // Flag to toggle between colors
+	// Define the colors for the flashing effect
+	u32 color1 = 0xAB47BC; // Bright yellow
+	u32 color2 = 0x6A1B9A; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime1 += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime1 >= flashingIntervalColor3) {
+			useColor2 = false;
+			elapsedTime1 = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime1 >= flashingIntervalColor4) {
+			useColor2 = true;
+			elapsedTime1 = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color2);
+	}
+}
+
+
 static std::map<int, Question> questionAlgo = {
 		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
 		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}},
@@ -145,10 +223,12 @@ static std::map<int, Question> questionLeadership = {
 int pointerX;
 int pointerY;
 
-//Jeopardy UI to pick categories
-internal void jeopardy(Input* input) {
+internal void jeopardy(Input* input, float dt) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	draw_text("CHOOSE YOUR QUESTION CATEGORY", -50, 35, 0.6, 0xFFFF00);
+	pressEnterAnimation(dt);
+	pressEscapeAnimation(dt);
 	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
 		pointerX = !pointerX;
 	}
@@ -161,10 +241,12 @@ internal void jeopardy(Input* input) {
 
 	if (pointerY == 0) {
 		if (pointerX == 0) {
-			draw_text("ALGO", -80, -10, 1, 0x48FFFF);
-			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
+			draw_text("ALGORITHM", -80, 20, 1, 0x48FFFF);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
@@ -172,12 +254,13 @@ internal void jeopardy(Input* input) {
 			}
 		}
 		else {
-			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
-			draw_text("SEPM", 20, -10, 1, 0x48FFFF);
-			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_text("SEPM", 20, 20, 1, 0x48FFFF);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE SEPM COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN TEAMS.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
-			
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
@@ -186,31 +269,33 @@ internal void jeopardy(Input* input) {
 	}
 	else if (pointerY == 1) {
 		if (pointerX == 0) {
-			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
-			draw_text("BITS", -80, -20, 1, 0x48FFFF);
-			draw_lowercase_letter("leadership", 20, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_text("BITS", -80, 10, 1, 0x48FFFF);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
-				
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
 			}
 		}
 		else {
-			draw_lowercase_letter("algo", -80, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("bits", -80, -20, 0.7f, 0x888888);
-			draw_text("LEADERSHIP", 20, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_text("LEADERSHIP", 20, 10, 1, 0x48FFFF);
+			draw_text("QUESTION RELATING TO LEADERSHIP.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED TO LEAD A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
-				
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
 			}
 		}
 	}
-	if (pressed(BUTTON_N)) {
+	if (pressed(BUTTON_ESCAPE)) {
 		current_gamemode = GM_UI;
 	}
 }
@@ -302,6 +387,33 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		}
 	}
 }
+
+internal void pauseScreen(Input* input, float dt) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	if (pressed(BUTTON_W)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		up_down = 1;
+	}
+
+	if (up_down == 0) {
+		draw_text("RESUME", -80, -10, 1, 0x48FFFF);
+		draw_lowercase_letter("exit to menu", -80, -20, 0.7f, 0x888888);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_GAMEPLAY;
+		}
+	}
+	else {
+		draw_lowercase_letter("resume", -80, -10, 0.7f, 0x888888);
+		draw_text("EXIT TO MENU", -80, -20, 1, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_UI;
+		}
+	}
+}
+
 // The main gameplay method 
 internal void gameplay(Input* input, float dt) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
@@ -446,6 +558,7 @@ internal void winScreen(Input* input, float dt) {
 	clear_screen(0xffaa33);
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
 	draw_text("YOU MURKED THE AI!", -50, 30, 1, 0x8C68FF);
 	draw_text("P", -18, 20, 1, 0x06CFCE);
 	draw_number(1, -13, 17, 1.4, 0x06CFCE);
@@ -457,7 +570,7 @@ internal void winScreen(Input* input, float dt) {
 	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
 	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
 	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
-	if (pressed(BUTTON_N)) {
+	if (pressed(BUTTON_ESCAPE)) {
 		current_gamemode = GM_UI;
 		player_1_score = 0;
 		player_2_score = 0;
@@ -470,6 +583,7 @@ internal void loseScreen(Input* input, float dt) {
 	clear_screen(0xffaa33);
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
 	draw_text("YOU GOT YOUR BACK BLOWN OUT!", -60, 30, 0.75, 0x8C68FF);
 	draw_text("AI", -18, 20, 1, 0xFF0C0C);
 	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
@@ -480,7 +594,7 @@ internal void loseScreen(Input* input, float dt) {
 	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
 	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
 	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
-	if (pressed(BUTTON_N)) {
+	if (pressed(BUTTON_ESCAPE)) {
 		current_gamemode = GM_UI;
 		player_1_score = 0;
 		player_2_score = 0;
@@ -490,12 +604,26 @@ internal void loseScreen(Input* input, float dt) {
 }
 
 
-// UserUI function
-internal void userUI(Input* input) {
+float yOffset;
+float xOffset;
+float titleX = 0.0f;
+float titleY = 0.0f;
+
+
+
+internal void userUI(Input* input, float dt) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
-	draw_text("PONG THE SEQUEL", -80, 30, 1, 0xFFFF00);
+	xOffset = sin(titleX) * 2.0f; // Adjust the magnitude of movement
+	yOffset = cos(titleY) * 2.0f; // Adjust the magnitude of movement
+	titleX += 0.01f; // Adjust the speed of movement
+	titleY += 0.007f; // Adjust the speed of movement
+
+	pressEnterAnimation(dt);
+
+	//draw_text("PRESS [ENTER] TO CHOOSE", 10, -35, 0.5, 0xFFFF00);
+	draw_text("PONG THE SEQUEL", -38 + xOffset, 30 + yOffset, 1, 0xFFFF00);
 	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
 		hot_button = !hot_button;
 	}
@@ -509,47 +637,45 @@ internal void userUI(Input* input) {
 	if (up_down == 0) {
 		if (hot_button == 0) {
 			draw_text("SINGLE PLAYER", -80, -10, 1, 0x48FFFF);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
-			draw_text("EXTRA", -80, -20, 1, 0x888888);
-			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
-				random = rand() % 4;
-				random2 = rand() % 2;
+				random2 = getRandomNumber(2);
 				current_gamemode = GM_JEOPARDY;
 				enemy_is_ai = hot_button ? 0 : 1;
 			}
 		}
 		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
 			draw_text("MULTIPLAYER", 20, -10, 1, 0x48FFFF);
-			draw_text("EXTRA", -80, -20, 1, 0x888888);
-			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
-				random = rand() % 4;
-				random2 = rand() % 2;
+				random3 = rand() % 2;
 				current_gamemode = GM_MULTIPLAYER;
-				enemy_is_ai = hot_button ? 0 : 1;
 			}
 		}
 	}
 	else if (up_down == 1) {
-		if(hot_button == 0){
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
-			draw_text("EXTRA", -80, -20, 1, 0x48FFFF);
-			draw_text("TUTORIAL", 20, -20, 1, 0x888888);
+		if (hot_button == 0) {
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_text("EXTRA MODE", -80, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
-				question = false;
-				random = rand() % 4;
-				random2 = rand() % 4;
+				random = getRandomNumber(2);
 				current_gamemode = GM_EXTRA_GAMEPLAY;
 			}
 		}
 		else {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0x888888);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0x888888);
-			draw_text("EXTRA", -80, -20, 1, 0x888888);
-			draw_text("TUTORIAL", 20, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_text("QUIT", 20, -20, 1, 0x48FFFF);
+			if (pressed(BUTTON_ENTER)) {
+				quit = true;
+			}
 		}
 	}
 }
@@ -573,7 +699,7 @@ internal void simulate_game(Input* input, float dt) {
 		}
 	}
 	else if (current_gamemode == GM_JEOPARDY) {
-		jeopardy(input);
+		jeopardy(input,dt);
 	}
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
 	}
@@ -585,82 +711,13 @@ internal void simulate_game(Input* input, float dt) {
 		clear_screen(0xffaa33);
 		loseScreen(input, dt);
 	}
+	else if (current_gamemode == GM_PAUSE) {
+		pauseScreen(input, dt);
+	}
 	else {
-		userUI(input);
+		userUI(input,dt);
 	}
 }
 
 
 
-float flashingIntervalColor1 = 0.3f; // Change to color2 every 0.3 seconds
-float flashingIntervalColor2 = 0.8f; // Change to color1 every 0.8 seco
-float elapsedTime = 0.0f; // Track time elapsed
-bool useColor1 = true; // Flag to toggle between colors
-
-internal void pressEnterAnimation(float dt) {
-	// Define the colors for the flashing effect
-	u32 color1 = 0xFFFF00; // Bright yellow
-	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
-
-	// Inside your update/render loop or where time is tracked
-	// Increment elapsed time by delta time (dt)
-	elapsedTime += dt;
-
-	// Check if enough time has passed to change colors
-	if (useColor1) {
-		if (elapsedTime >= flashingIntervalColor1) {
-			useColor1 = false;
-			elapsedTime = 0.0f;
-		}
-	}
-	else {
-		if (elapsedTime >= flashingIntervalColor2) {
-			useColor1 = true;
-			elapsedTime = 0.0f;
-		}
-	}
-
-	if (useColor1) {
-		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color1);
-	}
-	else {
-		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color2);
-	}
-}
-
-
-// animateUI function
-internal void pressEscapeAnimation(float dt) {
-	float flashingIntervalColor3 = 0.3f; // Change to color2 every 0.3 seconds
-	float flashingIntervalColor4 = 0.8f; // Change to color1 every 0.8 seco
-	float elapsedTime1 = 0.0f; // Track time elapsed
-	bool useColor2 = true; // Flag to toggle between colors
-	// Define the colors for the flashing effect
-	u32 color1 = 0xAB47BC; // Bright yellow
-	u32 color2 = 0x6A1B9A; // Darker yellow (adjust as needed)
-
-	// Inside your update/render loop or where time is tracked
-	// Increment elapsed time by delta time (dt)
-	elapsedTime1 += dt;
-
-	// Check if enough time has passed to change colors
-	if (useColor1) {
-		if (elapsedTime1 >= flashingIntervalColor3) {
-			useColor2 = false;
-			elapsedTime1 = 0.0f;
-		}
-	}
-	else {
-		if (elapsedTime1 >= flashingIntervalColor4) {
-			useColor2 = true;
-			elapsedTime1 = 0.0f;
-		}
-	}
-
-	if (useColor1) {
-		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color1);
-	}
-	else {
-		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color2);
-	}
-}

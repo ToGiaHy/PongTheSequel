@@ -131,11 +131,11 @@ const char* letters[][7] = {
 	"0  0",
 
 	"000",
-	" 0",
-	" 0",
-	" 0",
-	" 0",
-	" 0",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
 	"000",
 
 	" 000",
@@ -186,10 +186,10 @@ const char* letters[][7] = {
 	"0  0",
 	"0000",
 
-	" 000",
+	"0000",
 	"0  0",
 	"0  0",
-	"000",
+	"0000",
 	"0",
 	"0",
 	"0",
@@ -304,7 +304,41 @@ const char* letters[][7] = {
 	" 0 ",
 	" 0 ",
 	"   ",
-	" 0 "
+	" 0 ",
+
+	" 000 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 000 ",
+
+	"000",
+	"  0",
+	"  0",
+	"  0",
+	"  0",
+	"  0",
+	"000",
+
+  "   0",
+  "  000",
+  " 0 0 0",
+  "0  0  0",
+  "   0",
+  "   0",
+  "   0",
+  "   0",
+
+  "   0",
+  "   0",
+  "   0",
+  "0  0  0",
+  " 0 0 0",
+  "  000",
+  "   0 ",
+
 };
 
 //draw text method
@@ -319,6 +353,10 @@ internal void draw_text(const char* text, float x, float y, float size, u32 colo
 			else if (*text == 46) letter = letters[26]; // '.' character
 			else if (*text == '?') letter = letters[28]; // '?' character
 			else if (*text == '!') letter = letters[29];
+			else if (*text == '[') letter = letters[30];
+			else if (*text == ']') letter = letters[31];
+			else if (*text == '>') letter = letters[32];
+			else if (*text == '<') letter = letters[33];
 			else letter = letters[*text - 'A'];
 			float original_x = x;
 

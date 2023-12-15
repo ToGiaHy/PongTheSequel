@@ -114,11 +114,13 @@ input.buttons[b].is_down = is_down;\
 					process_button(BUTTON_S, 'S');
 					process_button(BUTTON_A, 'A');
 					process_button(BUTTON_D, 'D');
+					process_button(BUTTON_LEFT, VK_LEFT);
+					process_button(BUTTON_RIGHT, VK_RIGHT);
 					process_button(BUTTON_ENTER, VK_RETURN);
 					process_button(BUTTON_I, 'I');
 					process_button(BUTTON_O, 'O');
 					process_button(BUTTON_K, 'K');
-					process_button(BUTTON_N, 'N');
+					process_button(BUTTON_ESCAPE, VK_ESCAPE);
 				}
 			}break;
 			default: {
@@ -129,7 +131,10 @@ input.buttons[b].is_down = is_down;\
 		}
 
 		simulate_game(&input, delta_time);
+		if (quit) {
+			break;
 
+		}
 		StretchDIBits(hdc, 0, 0, render_background.width, render_background.height, 0, 0, render_background.width, render_background.height, render_background.memory, &render_background.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
 		LARGE_INTEGER frame_end_time;
