@@ -584,3 +584,77 @@ internal void simulate_game(Input* input, float dt) {
 	}
 }
 
+
+
+float flashingIntervalColor1 = 0.3f; // Change to color2 every 0.3 seconds
+float flashingIntervalColor2 = 0.8f; // Change to color1 every 0.8 seco
+float elapsedTime = 0.0f; // Track time elapsed
+bool useColor1 = true; // Flag to toggle between colors
+
+internal void pressEnterAnimation(float dt) {
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFFFF00; // Bright yellow
+	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime >= flashingIntervalColor1) {
+			useColor1 = false;
+			elapsedTime = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime >= flashingIntervalColor2) {
+			useColor1 = true;
+			elapsedTime = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color2);
+	}
+}
+
+
+// animateUI function
+internal void pressEscapeAnimation(float dt) {
+	float flashingIntervalColor3 = 0.3f; // Change to color2 every 0.3 seconds
+	float flashingIntervalColor4 = 0.8f; // Change to color1 every 0.8 seco
+	float elapsedTime1 = 0.0f; // Track time elapsed
+	bool useColor2 = true; // Flag to toggle between colors
+	// Define the colors for the flashing effect
+	u32 color1 = 0xAB47BC; // Bright yellow
+	u32 color2 = 0x6A1B9A; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime1 += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime1 >= flashingIntervalColor3) {
+			useColor2 = false;
+			elapsedTime1 = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime1 >= flashingIntervalColor4) {
+			useColor2 = true;
+			elapsedTime1 = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color2);
+	}
+}
