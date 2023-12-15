@@ -141,76 +141,212 @@ internal void testQuestion(Input* input, int questionIndex) {
 }
 
 internal void gameplay(Input* input, float dt) {
+	
+	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
+	draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x464651, lower, upper);
+	elapsedTime3 += dt;
+	if (elapsedTime3 <= intervalAppear) {
+		draw_text("PRESS [ESC] TO OPEN MENU", -80, 35, 0.5, 0xFFFF00);
+		draw_text(">", -79.5, 30, 1, 0xFFFF00);
+		draw_text("W", -79, 20, 1, 0xFFFF00);
+		render_ascii_art(box, 9,7,-82.5, 22, 1.6, 0xFFFF00, 0xFFFF00, 0xFFFF00);
+		draw_text("S", -79, -20, 1, 0xFFFF00);
+		render_ascii_art(box, 9, 7, -82.5, -18, 1.6, 0xFFFF00, 0xFFFF00, 0xFFFF00);
+		draw_text("<", -79.5, -30, 1, 0xFFFF00);
+
+	}
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_PAUSE;
+	}
+	bool slowMo = false;
 	float player_1_ddp = 0.f;
-	if (!enemy_is_ai) {
-		if (is_down(BUTTON_UP)) player_1_ddp += 2000;
-		if (is_down(BUTTON_DOWN)) player_1_ddp -= 2000;
+	if (player_1_score >= 6) {
+		tracking_speed_factor = 250;
+		overall_speed = 1700;
 	}
 	else {
-		player_1_ddp = (ball_p_y - player_1_p) * 100;
-		if (player_1_ddp > 1300) player_1_ddp = 1300;
-		if (player_1_ddp < -1300) player_1_ddp = -1300;
+		tracking_speed_factor = 100;
+		overall_speed = 1300;
 	}
-
+	player_1_ddp = (ball_p_y - player_1_p) * tracking_speed_factor;
+	if (player_1_ddp > overall_speed) player_1_ddp = overall_speed;
+	if (player_1_ddp < -overall_speed) player_1_ddp = -overall_speed;
+	float player_3_ddp = 0;
 	float player_2_ddp = 0.f;
-	if (is_down(BUTTON_W)) player_2_ddp += 2000;
-	if (is_down(BUTTON_S)) player_2_ddp -= 2000;
+	if (answer1.isCorrect == true && random2 == 0) {
+		if (is_down(BUTTON_W)) player_2_ddp += 5000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		slideColor = 0xb10000;
+	}
+	else if (slowMo) {
+		player_2_p = 0;
+		if (is_down(BUTTON_W)) player_2_ddp += 0;
+		if (is_down(BUTTON_S)) player_2_ddp -= 0;
+	}
+	else {
+		if (is_down(BUTTON_W)) player_2_ddp += 2000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 2000;
+	}
 
 	simulate_player(&player_1_p, &player_1_dp, player_1_ddp, dt);
 	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
-
-
-	// Simulate Ball
-	{
+	if (answer1.isCorrect == true && random2 == 1) {
+		player_2_half_size_y = 16;
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x964B00);
+	}
+	else if (answer1.isCorrect == false && answer1.question == true && random2 == 1) {
+		player_2_half_size_y = 10;
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xADD8E6);
+	}
+	else if (player_1_score == 5 && answer1.question == false) {
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
+	}
+	else {
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xCCCDFF);
+	}
+	if (player_1_score == 5 && answer1.question == false) {
+		countLong = 1;
+		slowMo = true;
+		testQuestion(input, random, dt);
+		draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x383841, 0x383841, 0x383841);
+	}
+	else {
+		draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x383841, 0x383841, 0x383841);
+	}
+	if (slowMo) {
+		ball_p_x += ball_dp_x * 0.1f * dt;
+		ball_p_y += ball_dp_y * 0.1f * dt;
+		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 0xffffff);
+		if (ball_p_x - ball_half_size < -arena_half_size_x) {
+			ball_dp_x *= -1;
+			ball_dp_y = 0;
+			ball_p_x = 0;
+			ball_p_y = 0;
+			answer1.question = true;
+			slowMo = false;
+			player_2_score++;
+		}
+	}
+	else {
 		ball_p_x += ball_dp_x * dt;
 		ball_p_y += ball_dp_y * dt;
+		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, ballColor);
 
-		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_half_size_x, player_half_size_y)) {
+
+		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_half_size_x, player_half_size_y)
+			) {
 			ball_p_x = 80 - player_half_size_x - ball_half_size;
 			ball_dp_x *= -1;
+			//ball_dp_y = player_1_dp *.75f; 
 			ball_dp_y = (ball_p_y - player_1_p) * 2 + player_1_dp * .75f;
+			ballColor = 0x00FFFF;
 		}
-		else if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_half_size_x, player_half_size_y)) {
+
+		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_2_half_size_x, player_2_half_size_y)
+			) {
 			ball_p_x = -80 + player_half_size_x + ball_half_size;
 			ball_dp_x *= -1;
 			ball_dp_y = (ball_p_y - player_2_p) * 2 + player_2_dp * .75f;
+			ballColor = 0xFF6347;
 		}
+		
 
 		if (ball_p_y + ball_half_size > arena_half_size_y) {
 			ball_p_y = arena_half_size_y - ball_half_size;
 			ball_dp_y *= -1;
+			ballColor = 0xFFFF00;
+			upper = 0x008000;
 		}
 		else if (ball_p_y - ball_half_size < -arena_half_size_y) {
 			ball_p_y = -arena_half_size_y + ball_half_size;
 			ball_dp_y *= -1;
+			ballColor = 0xFFFF00;
+			lower = 0x008000;
 		}
-
+		else {
+			lower = 0x464651;
+			upper = 0x464651;
+		}
 		if (ball_p_x + ball_half_size > arena_half_size_x) {
 			ball_dp_x *= -1;
 			ball_dp_y = 0;
 			ball_p_x = 0;
 			ball_p_y = 0;
 			player_1_score++;
+			ballColor = 0xFF49B3;
 		}
-		else if (ball_p_x - ball_half_size < -arena_half_size_x) {
+		if (ball_p_x - ball_half_size < -arena_half_size_x) {
 			ball_dp_x *= -1;
 			ball_dp_y = 0;
 			ball_p_x = 0;
 			ball_p_y = 0;
 			player_2_score++;
+			ballColor = 0xFF49B3;
+
 		}
+
 	}
 
-	draw_number(player_1_score, -10, 40, 1.f, 0xffffff);
-	draw_number(player_2_score, 10, 40, 1.f, 0xffffff);
+	//HEALTH
 
-	// Rendering
-	draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 0xffffff);
+	//float at_x = -80;
+	//for (int i = 0; i < player_1_score; i++) {
+	//	draw_rect(at_x, 47.f, 1.f, 1.f, 0xaaaaaa);
+	//	at_x += 2.5f;
+	//}
+	//at_x = 80;
+	//for (int i = 0; i < player_2_score; i++) {
+	//	draw_rect(at_x, 47.f, 1.f, 1.f, 0xaaaaaa);
+	//	at_x -= 2.5f;
+	//}
 
-	draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xffffff);
-	draw_rect(-80, player_2_p, player_half_size_x, player_half_size_y, 0xffffff);
+	draw_number(player_1_score, -10, 40, 1.f, 0xbbffbb);
+	draw_number(player_2_score, 10, 40, 1.f, 0xbbffbb);
+	// Inside your gameplay function
+	// Detect collision with player 3 on all sides
+	if (answer1.question == true && answer1.isCorrect == false && random2 == 0) {
+		static bool movingUp = true;
+		const float movementSpeed = 20.0f; // Adjust the speed of movement
+		const float maxUpPosition = 20.0f; // Adjust the maximum up position
+		const float minDownPosition = -20.0f; // Adjust the minimum down position
+		if (movingUp) {
+			player_3_p += movementSpeed * dt; // Move up
+			if (player_3_p >= maxUpPosition) {
+				player_3_p = maxUpPosition; // Limit at the maximum up position
+				movingUp = false; // Change direction
+			}
+		}
+		else {
+			player_3_p -= movementSpeed * dt; // Move down
+			if (player_3_p <= minDownPosition) {
+				player_3_p = minDownPosition; // Limit at the minimum down position
+				movingUp = true; // Change direction
+			}
+		}
+		simulate_player(&player_3_p, &player_3_dp, player_3_ddp, dt);
+		if ((ball_p_x + ball_half_size > 30 - player_half_size_x) &&
+			(ball_p_x - ball_half_size < 30 + player_half_size_x) &&
+			(ball_p_y + ball_half_size > player_3_p - 17) &&
+			(ball_p_y - ball_half_size < player_3_p + 17)) {
+			// Handle collision with player 3 here
+			if (ball_p_x < 30) {
+				ball_p_x = 30 - player_half_size_x - ball_half_size;
+			}
+			else {
+				ball_p_x = 30 + player_half_size_x + ball_half_size;
+			}
+			ball_dp_x *= -1;
+			ball_dp_y = (ball_p_y - player_3_p) * 2 + player_3_dp * 0.75f;
+			ballColor = 0x808080;
+		}
+
+		draw_rect(30, player_3_p, player_half_size_x, 17, 0x8D155E);
+	}
 }
 
 internal void extraGameplay(Input* input, float dt) {
