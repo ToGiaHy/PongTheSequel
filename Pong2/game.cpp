@@ -2,26 +2,36 @@
 #include<cstdlib>
 #include <map>
 #include <vector>
+#include <windows.h>
+#include <thread>
+#include <stdio.h>
+#include <thread>
+#include <chrono>
+#include <atomic>
+#include <ctime>
 
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
 
+static bool quit = false;
+
 //float player_pos_x = 0.f;
-float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp;
+float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_3_ddp = 0;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
 float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 1;
 float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 1;
 
 int player_1_score, player_2_score;
+
 struct Question {
 	const char* questionText;
 	std::vector<const char*> answerOptions;
 	const char* correctAnswer;
 };
 
-
+//Handles constraints for the player in the game
 internal void
 simulate_player(float* p, float* dp, float ddp, float dt) {
 	ddp -= *dp * 10.f;
@@ -38,6 +48,7 @@ simulate_player(float* p, float* dp, float ddp, float dt) {
 	}
 }
 
+//Handles collision detection
 internal bool
 aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 	float p2x, float p2y, float hs2x, float hs2y) {
@@ -46,6 +57,7 @@ aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 		p1y + hs1y > p2y - hs2y &&
 		p1y + hs1y < p2y + hs2y);
 }
+
 
 float flashingIntervalColor5 = 0.3f; // Change to color2 every 0.3 seconds
 float flashingIntervalColor6 = 0.8f; // Change to color1 every 0.8 seco
@@ -82,6 +94,7 @@ internal void pressQuicklyAnimation(float dt) {
 		draw_text("CHOOSE THE ANSWERS QUICKLY BEFORE THE BALL HITS YOUR GOAL", -80, 30, 0.3, color2);
 	}
 }
+
 enum Gamemode {
 	GM_MENU,
 	GM_GAMEPLAY,
@@ -89,8 +102,14 @@ enum Gamemode {
 	GM_UI,
 	GM_WINSCREEN,
 	GM_LOSESCREEN,
-	GM_QUESTION,
+	GM_JEOPARDY,
+	GM_WINPLAYER,
+	GM_MULTIPLAYER,
+	GM_LOADING,
+	GM_PAUSE,
 };
+
+//global variables for use in methods
 Gamemode current_gamemode;
 int hot_button;
 int up_down;
@@ -105,9 +124,22 @@ bool question;
 bool question2;
 int random;
 int random2;
+int random3;
 int countLong;
 int speed;
+int questionType;
+int loadingTime;
 
+//random number generator
+int getRandomNumber(int range) {
+	// Seed the random number generator using current time
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+	// Generate a random number between 0 and 4
+	return std::rand() % range; // Modulus 4 ensures numbers between 0 and 3 (inclusive)
+}
+
+//struct for answer used in test question
 struct Answer {
 	bool question;   // Text representing the answer option
 	bool isCorrect;     // Indicates whether the answer is correct or not
@@ -115,39 +147,118 @@ struct Answer {
 	// Constructor to initialize the Answer struct
 	Answer(bool question, bool isCorrect) : question(question), isCorrect(isCorrect) {}
 };
+
 Answer answer1(false, false);
-std::map<int, Question> questionAlgo = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+
+float flashingIntervalColor1 = 0.3f; // Change to color2 every 0.3 seconds
+float flashingIntervalColor2 = 0.8f; // Change to color1 every 0.8 seco
+float elapsedTime = 0.0f; // Track time elapsed
+bool useColor1 = true; // Flag to toggle between colors
+
+internal void pressEnterAnimation(float dt) {
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFFFF00; // Bright yellow
+	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime >= flashingIntervalColor1) {
+			useColor1 = false;
+			elapsedTime = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime >= flashingIntervalColor2) {
+			useColor1 = true;
+			elapsedTime = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ENTER] TO CHOOSE", 27, -35, 0.4, color2);
+	}
+}
+
+
+// animateUI function
+internal void pressEscapeAnimation(float dt) {
+	float flashingIntervalColor3 = 0.3f; // Change to color2 every 0.3 seconds
+	float flashingIntervalColor4 = 0.8f; // Change to color1 every 0.8 seco
+	float elapsedTime1 = 0.0f; // Track time elapsed
+	bool useColor2 = true; // Flag to toggle between colors
+	// Define the colors for the flashing effect
+	u32 color1 = 0xAB47BC; // Bright yellow
+	u32 color2 = 0x6A1B9A; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime1 += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime1 >= flashingIntervalColor3) {
+			useColor2 = false;
+			elapsedTime1 = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime1 >= flashingIntervalColor4) {
+			useColor2 = true;
+			elapsedTime1 = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ESC] TO RETURN TO MENU", -80, -35, 0.4, color2);
+	}
+}
+
+
+static std::map<int, Question> questionAlgo = {
+		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
+		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}},
+		{2, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
+		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
-std::map<int, Question> questionAlgo1 = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}}
+static std::map<int, Question> questionAlgo1 = {
+		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
+		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}}
 };
-std::map<int, Question> questionAlgo2 = {
-		{0, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{1, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+static std::map<int, Question> questionAlgo2 = {
+		{0, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
+		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
-std::map<int, Question> questionSEPM = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+static std::map<int, Question> questionSEPM = {
+		{0, {"WHAT IS ONE OF THE PROCESS IN PM ?", {"INITIATING", "BLAMING", "WORK ALONE"}, "INITIATING"}},
+		{1, {"ONE OF THE PROJECT FOUNDATIONS", {"SCOPE", "MONEY", "SPACE"}, "SCOPE"}},
+		{2, {"WHAT IS A PROJECT NOT ?", {"REPETITIVE", "TEAMWORK", "PROFESSIONAL"}, "REPETITIVE"}},
+		{3, {"NOT A PROJECT", {"ACCOUNTING", "ENGINEERING", "PRODUCT DEV"}, "ACCOUNTING"}}
 };
-std::map<int, Question> questionBITS = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+static std::map<int, Question> questionBITS = {
+		{0, {"TEAMWORK ISSUES THAT CAN HAPPEN", {"UNCLEAR GOALS", "FIST FIGHTING", "STABBING"}, "UNCLEAR GOALS"}},
+		{1, {"IS BUDGET A REQUIRED PART OF THE PROPOSAL ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
+		{2, {"WHY DO YOU NEED TO TEST SOFTWARE?", {"FUN", "ENGAGING", "SECURITY"}, "SECURITY"}},
+		{3, {"GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
 };
-std::map<int, Question> questionLeadership = {
-		{0, {"THIS GAME IS CALLED PONG ?", {"YES", "NO", "MAYBE"}, "YES"}},
-		{1, {"THERE IS NOTHING WE CAN DO ?", {"YES", "NO", "MAYBE"}, "NO"}},
-		{2, {"YOU ARE DEAD INSIDE ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
-		{3, {"HOW MANY ?", {"YES", "NO", "MAYBE"}, "MAYBE"}}
+static std::map<int, Question> questionLeadership = {
+		{0, {"WHAT LEADERSHIP STYLE DOES NOT INVOLVE TEAMMATES DECISIONS ?", {"AUTOCRATIC", "DEMOCRATIC", "SITUATIONAL"}, "AUTOCRATIC"}},
+		{1, {"EMOTIONAL INTELLIGENCE IS REQUIRED FOR LEADERS", {"YES", "NO", "NEVER"}, "YES"}},
+		{2, {"NOT A GOOD LEADER TRAIT", {"INTEGRITY", "MICROMANAGEMENT", "EMPATHY"}, "MICROMANAGEMENT"}},
+		{3, {"SKILL FOR A SUCCESSFUL LEADERSHIP", {"COMMUNICATION", "WORKING ALONE", "SHUTTING UP"}, "COMMUNICATION"}}
 };
+int pointerX;
+int pointerY;
+
 
 const char* box[] = {
 	"00000000",
@@ -178,7 +289,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 
 	// Seed the random number generator with the current time
 	auto it = questions.find(questionIndex);
-	
+
 	if (it != questions.end()) {
 		const Question& currentQuestion = it->second;
 
@@ -189,6 +300,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 
 		// Display the question
 		draw_text(questionText, -80, 20, 0.6, 0xFFFF00);
+
 
 		if (pressed(BUTTON_I)) {
 			display = 1;
@@ -202,6 +314,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			display = 3;
 		}
 		if (display == 1) {
+
 			draw_text("I", -78, 0.5, 0.5, 0x48FFFF);
 			draw_text(answerOptions[0], -80, -10, 0.6, 0x48FFFF);
 			render_ascii_art(box, 9, 7, -81, 2, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
@@ -272,7 +385,6 @@ u32 lower;
 u32 upper;
 float tracking_speed_factor;
 float overall_speed;
-
 internal void gameplay(Input* input, float dt) {
 	
 	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
@@ -371,6 +483,7 @@ internal void gameplay(Input* input, float dt) {
 		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, ballColor);
 
 
+
 		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_half_size_x, player_half_size_y)
 			) {
 			ball_p_x = 80 - player_half_size_x - ball_half_size;
@@ -380,7 +493,9 @@ internal void gameplay(Input* input, float dt) {
 			ballColor = 0x00FFFF;
 		}
 
+
 		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_2_half_size_x, player_2_half_size_y)
+
 			) {
 			ball_p_x = -80 + player_half_size_x + ball_half_size;
 			ball_dp_x *= -1;
@@ -388,6 +503,7 @@ internal void gameplay(Input* input, float dt) {
 			ballColor = 0xFF6347;
 		}
 		
+
 
 		if (ball_p_y + ball_half_size > arena_half_size_y) {
 			ball_p_y = arena_half_size_y - ball_half_size;
@@ -420,7 +536,6 @@ internal void gameplay(Input* input, float dt) {
 			ball_p_y = 0;
 			player_2_score++;
 			ballColor = 0xFF49B3;
-
 		}
 
 	}
@@ -485,22 +600,41 @@ internal void gameplay(Input* input, float dt) {
 
 internal void extraGameplay(Input* input, float dt) {
 }
+
+//main method called in win main
 internal void simulate_game(Input* input, float dt) {
 
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
-	current_gamemode = GM_GAMEPLAY;
 	if (current_gamemode == GM_GAMEPLAY) {
-		if (player_1_score == 5) {
-			testQuestion(input, random);
-			if (answer1.question == true) {
-				gameplay(input, dt);
-			}
+		gameplay(input, dt);
+		if (player_1_score >= 10) {
+			current_gamemode = GM_WINSCREEN;
 		}
-		else {
-			gameplay(input, dt);
+		else if (player_2_score >= 10) {
+			current_gamemode = GM_LOSESCREEN;
 		}
+	}
+	else if (current_gamemode == GM_JEOPARDY) {
+		jeopardy(input,dt);
 	}
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
 	}
+	else if (current_gamemode == GM_WINSCREEN) {
+		clear_screen(0xffaa33);
+		winScreen(input, dt);
+	}
+	else if (current_gamemode == GM_LOSESCREEN) {
+		clear_screen(0xffaa33);
+		loseScreen(input, dt);
+	}
+	else if (current_gamemode == GM_PAUSE) {
+		pauseScreen(input, dt);
+	}
+	else {
+		userUI(input,dt);
+	}
 }
+
+
+
