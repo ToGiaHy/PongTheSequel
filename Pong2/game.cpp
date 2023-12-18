@@ -13,7 +13,12 @@
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
-
+static bool playMusic = false;
+static bool playMusic1 = false;
+static bool playMusic2 = false;
+static bool playMusic3 = false;
+static bool playMusic4 = false;
+static bool playMusic5 = false;
 static bool quit = false;
 
 //float player_pos_x = 0.f;
@@ -283,6 +288,8 @@ internal void jeopardy(Input* input, float dt) {
 			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 1;
@@ -296,6 +303,8 @@ internal void jeopardy(Input* input, float dt) {
 			draw_text("QUESTION RELATING TO THE JAVA LANGUAGE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE KNOWLEDGE OF JAVA.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
@@ -311,6 +320,8 @@ internal void jeopardy(Input* input, float dt) {
 			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
@@ -324,6 +335,8 @@ internal void jeopardy(Input* input, float dt) {
 			draw_text("QUESTION RELATING TO MACHINE LEARNING.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE MACHINE LEARNING CONCEPTS.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
@@ -356,6 +369,11 @@ internal void pauseScreen(Input* input, float dt) {
 		draw_lowercase_letter("resume", -80, -10, 0.7f, 0x888888);
 		draw_text("EXIT TO MENU", -80, -20, 1, 0x48FFFF);
 		if (pressed(BUTTON_ENTER)) {
+			playMusic = true;
+			playMusic2 = false;
+			playMusic5 = false;
+			player_1_score = 0;
+			player_2_score = 0;
 			current_gamemode = GM_UI;
 		}
 	}
@@ -747,6 +765,8 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic = false;
+				playMusic2 = true;
 				random3 = rand() % 2;
 				current_gamemode = GM_MULTIPLAYER;
 			}
@@ -759,6 +779,8 @@ internal void userUI(Input* input, float dt) {
 			draw_text("EXTRA MODE", -80, -20, 1, 0x48FFFF);
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic = false;
+				playMusic2 = true;
 				random = getRandomNumber(2);
 				current_gamemode = GM_EXTRA_GAMEPLAY;
 			}
@@ -798,6 +820,8 @@ internal void winScreen(Input* input, float dt) {
 		player_2_score = 0;
 		answer1.isCorrect = false;
 		answer1.question = false;
+		playMusic3 = false;
+		playMusic2 = false;
 	}
 }
 
@@ -822,6 +846,8 @@ internal void loseScreen(Input* input, float dt) {
 		player_2_score = 0;
 		answer1.isCorrect = false;
 		answer1.question = false;
+		playMusic3 = false;
+		playMusic2 = false;
 	}
 }
 //main method called in win main
@@ -831,6 +857,10 @@ internal void simulate_game(Input* input, float dt) {
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
 	if (current_gamemode == GM_GAMEPLAY) {
 		gameplay(input, dt);
+		if (player_1_score >= 5) {
+			playMusic1 = false;
+			playMusic5 = true;
+		}
 		if (player_1_score >= 10) {
 			current_gamemode = GM_WINSCREEN;
 		}
@@ -844,10 +874,14 @@ internal void simulate_game(Input* input, float dt) {
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
 	}
 	else if (current_gamemode == GM_WINSCREEN) {
+		playMusic5 = false;
+		playMusic3 = true;
 		clear_screen(0xffaa33);
 		winScreen(input, dt);
 	}
 	else if (current_gamemode == GM_LOSESCREEN) {
+		playMusic5 = false;
+		playMusic4 = true;
 		clear_screen(0xffaa33);
 		loseScreen(input, dt);
 	}
@@ -855,6 +889,7 @@ internal void simulate_game(Input* input, float dt) {
 		pauseScreen(input, dt);
 	}
 	else {
+		playMusic = true;
 		userUI(input,dt);
 	}
 }
