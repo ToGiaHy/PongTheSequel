@@ -18,9 +18,12 @@ global_variable Render_background render_background;
 #include "game.cpp";
 WNDPROC Wndproc;
 
+
+// Callback function to call window and optimize resolution
 LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
+	//switch between different window states
 	switch (uMsg) {
 	case WM_CLOSE:
 	case WM_DESTROY: {
@@ -52,6 +55,7 @@ LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return result;
 }
 
+//main method
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -83,7 +87,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 		QueryPerformanceFrequency(&perf);
 		performance_frequency = (float)perf.QuadPart;
 	}
-
+	
+	//infinite loop to run the game
 	while (running) {
 		MSG message;
 
@@ -112,10 +117,10 @@ input.buttons[b].is_down = is_down;\
 					process_button(BUTTON_LEFT, VK_LEFT);
 					process_button(BUTTON_RIGHT, VK_RIGHT);
 					process_button(BUTTON_ENTER, VK_RETURN);
-					process_button(BUTTON_J, 'J');
-					process_button(BUTTON_G, 'G');
-					process_button(BUTTON_H, 'H');
-					process_button(BUTTON_N, 'N');
+					process_button(BUTTON_I, 'I');
+					process_button(BUTTON_O, 'O');
+					process_button(BUTTON_K, 'K');
+					process_button(BUTTON_ESCAPE, VK_ESCAPE);
 				}
 			}break;
 			default: {
@@ -126,7 +131,10 @@ input.buttons[b].is_down = is_down;\
 		}
 
 		simulate_game(&input, delta_time);
+		if (quit) {
+			break;
 
+		}
 		StretchDIBits(hdc, 0, 0, render_background.width, render_background.height, 0, 0, render_background.width, render_background.height, render_background.memory, &render_background.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
 		LARGE_INTEGER frame_end_time;
