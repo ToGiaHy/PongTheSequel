@@ -20,8 +20,8 @@ static bool quit = false;
 float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_3_ddp = 0;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
-float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 1;
-float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 1;
+float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 2;
+float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 2;
 
 int player_1_score, player_2_score;
 
@@ -258,7 +258,108 @@ static std::map<int, Question> questionLeadership = {
 };
 int pointerX;
 int pointerY;
+internal void jeopardy(Input* input, float dt) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	draw_text("CHOOSE YOUR QUESTION CATEGORY", -50, 35, 0.6, 0xFFFF00);
+	pressEnterAnimation(dt);
+	pressEscapeAnimation(dt);
+	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
+		pointerX = !pointerX;
+	}
+	if (pressed(BUTTON_W)) {
+		pointerY = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		pointerY = 1;
+	}
 
+	if (pointerY == 0) {
+		if (pointerX == 0) {
+			draw_text("ALGORITHM", -80, 20, 1, 0x48FFFF);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
+			if (pressed(BUTTON_ENTER)) {
+				random = getRandomNumber(4);
+				current_gamemode = GM_GAMEPLAY;
+				questionType = 1;
+			}
+		}
+		else {
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_text("SEPM", 20, 20, 1, 0x48FFFF);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE SEPM COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN TEAMS.", -80, -20, 0.4, 0xFFFFFF);
+			if (pressed(BUTTON_ENTER)) {
+				random = getRandomNumber(4);
+				current_gamemode = GM_GAMEPLAY;
+				questionType = 2;
+			}
+		}
+	}
+	else if (pointerY == 1) {
+		if (pointerX == 0) {
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_text("BITS", -80, 10, 1, 0x48FFFF);
+			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
+			if (pressed(BUTTON_ENTER)) {
+				random = getRandomNumber(4);
+				current_gamemode = GM_GAMEPLAY;
+				questionType = 3;
+			}
+		}
+		else {
+			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
+			draw_text("LEADERSHIP", 20, 10, 1, 0x48FFFF);
+			draw_text("QUESTION RELATING TO LEADERSHIP.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE SKILLS NEEDED TO LEAD A GROUP.", -80, -20, 0.4, 0xFFFFFF);
+			if (pressed(BUTTON_ENTER)) {
+				random = getRandomNumber(4);
+				current_gamemode = GM_GAMEPLAY;
+				questionType = 4;
+			}
+		}
+	}
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_UI;
+	}
+}
+
+internal void pauseScreen(Input* input, float dt) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	if (pressed(BUTTON_W)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		up_down = 1;
+	}
+
+	if (up_down == 0) {
+		draw_text("RESUME", -80, -10, 1, 0x48FFFF);
+		draw_lowercase_letter("exit to menu", -80, -20, 0.7f, 0x888888);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_GAMEPLAY;
+		}
+	}
+	else {
+		draw_lowercase_letter("resume", -80, -10, 0.7f, 0x888888);
+		draw_text("EXIT TO MENU", -80, -20, 1, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_UI;
+		}
+	}
+}
 
 const char* box[] = {
 	"00000000",
@@ -299,7 +400,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		const char* correctAnswer = currentQuestion.correctAnswer;
 
 		// Display the question
-		draw_text(questionText, -80, 20, 0.6, 0xFFFF00);
+		draw_text(questionText, -80, 20, 0.4, 0xFFFF00);
 
 
 		if (pressed(BUTTON_I)) {
@@ -600,7 +701,129 @@ internal void gameplay(Input* input, float dt) {
 
 internal void extraGameplay(Input* input, float dt) {
 }
+float yOffset;
+float xOffset;
+float titleX = 0.0f;
+float titleY = 0.0f;
 
+internal void userUI(Input* input, float dt) {
+
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	xOffset = sin(titleX) * 2.0f; // Adjust the magnitude of movement
+	yOffset = cos(titleY) * 2.0f; // Adjust the magnitude of movement
+	titleX += 0.01f; // Adjust the speed of movement
+	titleY += 0.007f; // Adjust the speed of movement
+
+	pressEnterAnimation(dt);
+
+	//draw_text("PRESS [ENTER] TO CHOOSE", 10, -35, 0.5, 0xFFFF00);
+	draw_text("PONG THE SEQUEL", -38 + xOffset, 30 + yOffset, 1, 0xFFFF00);
+	if (pressed(BUTTON_A) || pressed(BUTTON_D)) {
+		hot_button = !hot_button;
+	}
+	if (pressed(BUTTON_W)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		up_down = 1;
+	}
+
+	if (up_down == 0) {
+		if (hot_button == 0) {
+			draw_text("SINGLE PLAYER", -80, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
+			if (pressed(BUTTON_ENTER)) {
+				random2 = getRandomNumber(2);
+				current_gamemode = GM_JEOPARDY;
+				enemy_is_ai = hot_button ? 0 : 1;
+			}
+		}
+		else {
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
+			draw_text("MULTIPLAYER", 20, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
+			if (pressed(BUTTON_ENTER)) {
+				random3 = rand() % 2;
+				current_gamemode = GM_MULTIPLAYER;
+			}
+		}
+	}
+	else if (up_down == 1) {
+		if (hot_button == 0) {
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_text("EXTRA MODE", -80, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
+			if (pressed(BUTTON_ENTER)) {
+				random = getRandomNumber(2);
+				current_gamemode = GM_EXTRA_GAMEPLAY;
+			}
+		}
+		else {
+			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
+			draw_text("QUIT", 20, -20, 1, 0x48FFFF);
+			if (pressed(BUTTON_ENTER)) {
+				quit = true;
+			}
+		}
+	}
+}
+
+internal void winScreen(Input* input, float dt) {
+
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
+	draw_text("YOU MURKED THE AI!", -50, 30, 1, 0x8C68FF);
+	draw_text("P", -18, 20, 1, 0x06CFCE);
+	draw_number(1, -13, 17, 1.4, 0x06CFCE);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+	}
+}
+
+internal void loseScreen(Input* input, float dt) {
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
+	draw_text("YOU GOT YOUR BACK BLOWN OUT!", -60, 30, 0.75, 0x8C68FF);
+	draw_text("AI", -18, 20, 1, 0xFF0C0C);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+	}
+}
 //main method called in win main
 internal void simulate_game(Input* input, float dt) {
 
