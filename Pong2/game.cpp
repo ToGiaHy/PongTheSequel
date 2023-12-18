@@ -228,7 +228,7 @@ static std::map<int, Question> questionAlgo = {
 		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
 		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}},
 		{2, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
-		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
+		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
 static std::map<int, Question> questionAlgo1 = {
 		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
@@ -236,25 +236,25 @@ static std::map<int, Question> questionAlgo1 = {
 };
 static std::map<int, Question> questionAlgo2 = {
 		{0, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
-		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
+		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
-static std::map<int, Question> questionSEPM = {
-		{0, {"WHAT IS ONE OF THE PROCESS IN PM ?", {"INITIATING", "BLAMING", "WORK ALONE"}, "INITIATING"}},
-		{1, {"ONE OF THE PROJECT FOUNDATIONS", {"SCOPE", "MONEY", "SPACE"}, "SCOPE"}},
-		{2, {"WHAT IS A PROJECT NOT ?", {"REPETITIVE", "TEAMWORK", "PROFESSIONAL"}, "REPETITIVE"}},
-		{3, {"NOT A PROJECT", {"ACCOUNTING", "ENGINEERING", "PRODUCT DEV"}, "ACCOUNTING"}}
+static std::map<int, Question> questionJava = {
+		{0, {"WHAT IS THE ENTRY POINT METHOD IN JAVA ?", {"MAIN", "START", "RUN"}, "MAIN"}},
+		{1, {"WHAT KEYWORD IS USED TO DEFINE CONSTANT?", {"VAR", "FINAL", "CONST"}, "FINAL"}},
+		{2, {"WHAT IS A SUPERCLASS?", {"MAIN", "SUPER", "OBJECT"}, "OBJECT"}},
+		{3, {"WHICH KEYWORD IS USED FOR INHERITANCE?", {"EXTENDS", "INHERIT", "GIVEN"}, "EXTENDS"}}
 };
 static std::map<int, Question> questionBITS = {
 		{0, {"TEAMWORK ISSUES THAT CAN HAPPEN", {"UNCLEAR GOALS", "FIST FIGHTING", "STABBING"}, "UNCLEAR GOALS"}},
 		{1, {"IS BUDGET A REQUIRED PART OF THE PROPOSAL ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
 		{2, {"WHY DO YOU NEED TO TEST SOFTWARE?", {"FUN", "ENGAGING", "SECURITY"}, "SECURITY"}},
-		{3, {"GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
+		{3, {"WHAT IS CONDISERED GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
 };
-static std::map<int, Question> questionLeadership = {
-		{0, {"WHAT LEADERSHIP STYLE DOES NOT INVOLVE TEAMMATES DECISIONS ?", {"AUTOCRATIC", "DEMOCRATIC", "SITUATIONAL"}, "AUTOCRATIC"}},
-		{1, {"EMOTIONAL INTELLIGENCE IS REQUIRED FOR LEADERS", {"YES", "NO", "NEVER"}, "YES"}},
-		{2, {"NOT A GOOD LEADER TRAIT", {"INTEGRITY", "MICROMANAGEMENT", "EMPATHY"}, "MICROMANAGEMENT"}},
-		{3, {"SKILL FOR A SUCCESSFUL LEADERSHIP", {"COMMUNICATION", "WORKING ALONE", "SHUTTING UP"}, "COMMUNICATION"}}
+static std::map<int, Question> questionML = {
+		{0, {"WHAT IS THE GOAL OF SUPERVISED LEARNING?", {"PREDICTIONS", "PATTERNS", "SUMMARIZE"}, "PREDICTIONS"}},
+		{1, {"WHAT IS THE GOAL OF UNSUPERVISED LEARNING?", {"PREDICTIONS", "SUMMARIZE", "PATTERNS"}, "PATTERNS"}},
+		{2, {"WHAT TO DO TO EVALUATE CLASSIFICATION?", {"CONFUSION MATRIX", "FEATURE EXTRACTION", "TUNING"}, "CONFUSION MATRIX"}},
+		{3, {"WHAT IS ENSEMBLE LEARNING?", {"SINGULAR APPROACH", "MULTIPLE MODELS", "ISOLATION PREDICTIONS"}, "MULTIPLE MODELS"}}
 };
 int pointerX;
 int pointerY;
@@ -277,9 +277,9 @@ internal void jeopardy(Input* input, float dt) {
 	if (pointerY == 0) {
 		if (pointerX == 0) {
 			draw_text("ALGORITHM", -80, 20, 1, 0x48FFFF);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
@@ -290,11 +290,11 @@ internal void jeopardy(Input* input, float dt) {
 		}
 		else {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_text("SEPM", 20, 20, 1, 0x48FFFF);
+			draw_text("JAVA", 20, 20, 1, 0x48FFFF);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
-			draw_text("QUESTION RELATING TO THE SEPM COURSE.", -80, -10, 0.4, 0xFFFFFF);
-			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN TEAMS.", -80, -20, 0.4, 0xFFFFFF);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE JAVA LANGUAGE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE KNOWLEDGE OF JAVA.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
@@ -305,9 +305,9 @@ internal void jeopardy(Input* input, float dt) {
 	else if (pointerY == 1) {
 		if (pointerX == 0) {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_text("BITS", -80, 10, 1, 0x48FFFF);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
@@ -318,11 +318,11 @@ internal void jeopardy(Input* input, float dt) {
 		}
 		else {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_text("LEADERSHIP", 20, 10, 1, 0x48FFFF);
-			draw_text("QUESTION RELATING TO LEADERSHIP.", -80, -10, 0.4, 0xFFFFFF);
-			draw_text("ASKS ABOUT THE SKILLS NEEDED TO LEAD A GROUP.", -80, -20, 0.4, 0xFFFFFF);
+			draw_text("ML", 20, 10, 1, 0x48FFFF);
+			draw_text("QUESTION RELATING TO MACHINE LEARNING.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE MACHINE LEARNING CONCEPTS.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
@@ -379,13 +379,13 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		questions = questionAlgo;
 	}
 	else if (questionType == 2) {
-		questions = questionSEPM;
+		questions = questionJava;
 	}
 	else if (questionType == 3) {
 		questions = questionBITS;
 	}
 	else {
-		questions = questionLeadership;
+		questions = questionML;
 	}
 
 	// Seed the random number generator with the current time
