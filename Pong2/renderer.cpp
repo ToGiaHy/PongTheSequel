@@ -341,7 +341,7 @@ const char* letters[][7] = {
 
 };
 
-//draw text method
+
 internal void draw_text(const char* text, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
 	float original_y = y;
