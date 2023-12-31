@@ -1149,6 +1149,157 @@ internal void multiplayer(Input* input, float dt) {
 	}
 }
 
+internal void testQuestionMultiplayer(Input* input, int questionIndex, int playerType, float dt) {
+	pressShiftQuestion(dt);
+	if (playerType == 1) {
+		pressP1QuicklyAnimation(dt);
+	}
+	else {
+		pressP2QuicklyAnimation(dt);
+	}
+	std::map<int, Question> questions = getQuestionSet(playerType);
+	// Seed the random number generator with the current time
+	auto it = questions.find(questionIndex);
+
+	if (it != questions.end()) {
+		const Question& currentQuestion = it->second;
+
+		// Extract question text, answer options, and correct answer from currentQuestion
+		const char* questionText = currentQuestion.questionText;
+		const std::vector<const char*>& answerOptions = currentQuestion.answerOptions;
+		const char* correctAnswer = currentQuestion.correctAnswer;
+
+		// Display the question
+		draw_text(questionText, -80, 20, 0.4, 0xFFFF00);
+		if (playerType == 2) {
+			if (pressed(BUTTON_A)) {
+				display = 1;
+			}
+
+			if (pressed(BUTTON_D)) {
+				display = 2;
+			}
+
+			if (pressed(BUTTON_S)) {
+				display = 3;
+			}
+			if (display == 1) {
+				draw_text("A", -46, 8.8, 0.5, 0x48FFFF);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x48FFFF);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+				draw_text("D", 40.6, 8.8, 0.5, 0x888888);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x888888);
+				render_ascii_art(box, 29, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("S", -3, -14, 0.5, 0x888888);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+			}
+			else if (display == 2) {
+				draw_text("A", -46, 8.8, 0.5, 0x888888);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("D", 40.6, 8.8, 0.5, 0x48FFFF);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x48FFFF);
+				render_ascii_art(box, 29, 7, 38, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+				draw_text("S", -3, -14, 0.5, 0x888888);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+			}
+			else {
+				draw_text("A", -46, 8.8, 0.5, 0x888888);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("D", 40.6, 8.8, 0.5, 0x888888);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("S", -3, -14, 0.5, 0x48FFFF);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x48FFFF);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+			}
+		}
+		else if (playerType == 1) {
+			if (pressed(BUTTON_LEFT)) {
+				display = 1;
+			}
+
+			if (pressed(BUTTON_RIGHT)) {
+				display = 2;
+			}
+
+			if (pressed(BUTTON_DOWN)) {
+				display = 3;
+			}
+			if (display == 1) {
+				draw_text("(", -46.5, 9, 0.5, 0x48FFFF);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x48FFFF);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+				draw_text(")", 40, 9, 0.5, 0x888888);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x888888);
+				render_ascii_art(box, 29, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("<", -3.7, -14, 0.5, 0x888888);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+			}
+			else if (display == 2) {
+				draw_text("(", -46.5, 9, 0.5, 0x888888);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text(")", 40, 9, 0.5, 0x48FFFF);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x48FFFF);
+				render_ascii_art(box, 29, 7, 38, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+				draw_text("<", -3.7, -14, 0.5, 0x888888);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+			}
+			else {
+				draw_text("(", -46.5, 9, 0.5, 0x888888);
+				draw_text(answerOptions[0], -58, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text(")", 40, 9, 0.5, 0x888888);
+				draw_text(answerOptions[1], 30, 0, 0.45, 0x888888);
+				render_ascii_art(box, 9, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+				draw_text("<", -3.7, -14, 0.5, 0x48FFFF);
+				draw_text(answerOptions[2], -12, -23.5, 0.45, 0x48FFFF);
+				render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+			}
+		}
+		if (pressed(BUTTON_SHIFT)) {
+			// Check if the player selected the correct answer
+			const char* playerChoice;
+			if (display == 1) {
+				playerChoice = answerOptions[0];
+			}
+			else if (display == 2) {
+				playerChoice = answerOptions[1];
+			}
+			else {
+				playerChoice = answerOptions[2];
+			}
+
+			if (strcmp(playerChoice, correctAnswer) == 0 && playerType == 1) {
+				// Player answered correctly
+				player1.isCorrect = true;
+				player1.question = true;
+				//question = true;f
+			}
+			else if(!(strcmp(playerChoice, correctAnswer) == 0) && playerType == 1) {
+
+				// Player answered incorrectly
+				player1.isCorrect = false;
+				player1.question = true;
+			}
+			else if (strcmp(playerChoice, correctAnswer) == 0 && playerType == 2) {
+				player2.isCorrect = true;
+				player2.question = true;
+			}
+			else if (!(strcmp(playerChoice, correctAnswer) == 0) && playerType == 2){
+				player2.isCorrect = false;
+				player2.question = true;
+			}
+		}
+	}
+}
+
 
 
 
@@ -1349,3 +1500,4 @@ internal void highScore(Input* input, float dt) {
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0x8D155E);
 	}
 }
+
