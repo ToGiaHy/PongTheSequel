@@ -45,6 +45,21 @@ draw_arena_borders(float arena_x, float arena_y, u32 color) {
 	draw_rect_in_pixels(x1, y0, render_background.width, render_background.height, color);
 }
 
+internal void
+draw_arena_borders_special(float arena_x, float arena_y, u32 color, u32 color1, u32 color2) {
+	arena_x *= render_background.height * render_scale;
+	arena_y *= render_background.height * render_scale;
+
+	int x0 = (int)((float)render_background.width * .5f - arena_x);
+	int x1 = (int)((float)render_background.width * .5f + arena_x);
+	int y0 = (int)((float)render_background.height * .5f - arena_y);
+	int y1 = (int)((float)render_background.height * .5f + arena_y);
+	draw_rect_in_pixels(0, 0, render_background.width, y0, color1);
+	draw_rect_in_pixels(0, y1, x1, render_background.height, color2);
+	draw_rect_in_pixels(0, y0, x0, y1, color);
+	draw_rect_in_pixels(x1, y0, render_background.width, render_background.height, color);
+}
+
 //draw a rectangle with an increase in size
 internal void draw_rect(float x, float y, float half_size_x, float half_size_y, u32 color) {
 	x *= render_background.height * render_scale;
@@ -131,11 +146,11 @@ const char* letters[][7] = {
 	"0  0",
 
 	"000",
-	" 0",
-	" 0",
-	" 0",
-	" 0",
-	" 0",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
 	"000",
 
 	" 000",
@@ -186,10 +201,10 @@ const char* letters[][7] = {
 	"0  0",
 	"0000",
 
-	" 000",
+	"0000",
 	"0  0",
 	"0  0",
-	"000",
+	"0000",
 	"0",
 	"0",
 	"0",
@@ -296,10 +311,52 @@ const char* letters[][7] = {
 	"  0  ",
 	" 0   ",
 	"     ",
-	" 0   "
+	" 0   ",
+
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	"   ",
+	" 0 ",
+
+	" 000 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 0 ",
+	" 000 ",
+
+	"000",
+	"  0",
+	"  0",
+	"  0",
+	"  0",
+	"  0",
+	"000",
+
+  "   0",
+  "  000",
+  " 0 0 0",
+  "0  0  0",
+  "   0",
+  "   0",
+  "   0",
+  "   0",
+
+  "   0",
+  "   0",
+  "   0",
+  "0  0  0",
+  " 0 0 0",
+  "  000",
+  "   0 ",
+
 };
 
-//draw text method
+
 internal void draw_text(const char* text, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
 	float original_y = y;
@@ -310,6 +367,11 @@ internal void draw_text(const char* text, float x, float y, float size, u32 colo
 			if (*text == 47) letter = letters[27]; // '/' character
 			else if (*text == 46) letter = letters[26]; // '.' character
 			else if (*text == '?') letter = letters[28]; // '?' character
+			else if (*text == '!') letter = letters[29];
+			else if (*text == '[') letter = letters[30];
+			else if (*text == ']') letter = letters[31];
+			else if (*text == '>') letter = letters[32];
+			else if (*text == '<') letter = letters[33];
 			else letter = letters[*text - 'A'];
 			float original_x = x;
 
