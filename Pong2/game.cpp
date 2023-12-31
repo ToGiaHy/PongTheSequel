@@ -13,15 +13,20 @@
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
-
+static bool playMusic = false;
+static bool playMusic1 = false;
+static bool playMusic2 = false;
+static bool playMusic3 = false;
+static bool playMusic4 = false;
+static bool playMusic5 = false;
 static bool quit = false;
 
 //float player_pos_x = 0.f;
 float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_3_ddp = 0;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
-float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 1;
-float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 1;
+float ball_p_x, ball_p_y, ball_dp_x = 130, ball_dp_y, ball_half_size = 2;
+float ball_p1_x, ball_p1_y, ball_dp1_x = 130, ball_dp1_y, ball_half1_size = 2;
 
 int player_1_score, player_2_score;
 
@@ -58,7 +63,43 @@ aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 		p1y + hs1y < p2y + hs2y);
 }
 
-// Different game states to use in simulate_game
+
+float flashingIntervalColor5 = 0.3f; // Change to color2 every 0.3 seconds
+float flashingIntervalColor6 = 0.8f; // Change to color1 every 0.8 seco
+float elapsedTime2 = 0.0f; // Track time elapsed
+bool useColor3 = true; // Flag to toggle between colors
+
+internal void pressQuicklyAnimation(float dt) {
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFFFF00; // Bright yellow
+	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime2 += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor3) {
+		if (elapsedTime2 >= flashingIntervalColor5) {
+			useColor3 = false;
+			elapsedTime2 = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime2 >= flashingIntervalColor6) {
+			useColor3 = true;
+			elapsedTime2 = 0.0f;
+		}
+	}
+
+	if (useColor3) {
+		draw_text("CHOOSE THE ANSWERS QUICKLY BEFORE THE BALL HITS YOUR GOAL", -80, 30, 0.3, color1);
+	}
+	else {
+		draw_text("CHOOSE THE ANSWERS QUICKLY BEFORE THE BALL HITS YOUR GOAL", -80, 30, 0.3, color2);
+	}
+}
+
 enum Gamemode {
 	GM_MENU,
 	GM_GAMEPLAY,
@@ -192,7 +233,7 @@ static std::map<int, Question> questionAlgo = {
 		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
 		{1, {"WHAT IS ONE OF THE COMPLEXITY ?", {"TIME", "DIMENSIONS", "GRAVITY"}, "TIME"}},
 		{2, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
-		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
+		{3, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
 static std::map<int, Question> questionAlgo1 = {
 		{0, {"WHAT IS THE AVERAGE CASE FOR STACK ?", {"ONE", "N", "N SQUARED"}, "ONE"}},
@@ -200,29 +241,28 @@ static std::map<int, Question> questionAlgo1 = {
 };
 static std::map<int, Question> questionAlgo2 = {
 		{0, {"WHAT IS THE COMPLEXITY FOR THE KNAPSACK ?", {"N SQUARED", "N", "ONE"}, "N SQUARED"}},
-		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION SORTING ?", {"N", "ONE", "N SQUARED"}, "N"}}
+		{1, {"WHAT IS THE COMPLEXITY FOR DISTRIBUTION ?", {"N", "ONE", "N SQUARED"}, "N"}}
 };
-static std::map<int, Question> questionSEPM = {
-		{0, {"WHAT IS ONE OF THE PROCESS IN PM ?", {"INITIATING", "BLAMING", "WORK ALONE"}, "INITIATING"}},
-		{1, {"ONE OF THE PROJECT FOUNDATIONS", {"SCOPE", "MONEY", "SPACE"}, "SCOPE"}},
-		{2, {"WHAT IS A PROJECT NOT ?", {"REPETITIVE", "TEAMWORK", "PROFESSIONAL"}, "REPETITIVE"}},
-		{3, {"NOT A PROJECT", {"ACCOUNTING", "ENGINEERING", "PRODUCT DEV"}, "ACCOUNTING"}}
+static std::map<int, Question> questionJava = {
+		{0, {"WHAT IS THE ENTRY POINT METHOD IN JAVA ?", {"MAIN", "START", "RUN"}, "MAIN"}},
+		{1, {"WHAT KEYWORD IS USED TO DEFINE CONSTANT?", {"VAR", "FINAL", "CONST"}, "FINAL"}},
+		{2, {"WHAT IS A SUPERCLASS?", {"MAIN", "SUPER", "OBJECT"}, "OBJECT"}},
+		{3, {"WHICH KEYWORD IS USED FOR INHERITANCE?", {"EXTENDS", "INHERIT", "GIVEN"}, "EXTENDS"}}
 };
 static std::map<int, Question> questionBITS = {
 		{0, {"TEAMWORK ISSUES THAT CAN HAPPEN", {"UNCLEAR GOALS", "FIST FIGHTING", "STABBING"}, "UNCLEAR GOALS"}},
 		{1, {"IS BUDGET A REQUIRED PART OF THE PROPOSAL ?", {"YES", "NO", "MAYBE"}, "MAYBE"}},
 		{2, {"WHY DO YOU NEED TO TEST SOFTWARE?", {"FUN", "ENGAGING", "SECURITY"}, "SECURITY"}},
-		{3, {"GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
+		{3, {"WHAT IS CONDISERED GOOD PRACTICE OF CODING", {"WORD OF MOUTH", "COMMENTS", "MESSENGER"}, "COMMENTS"}}
 };
-static std::map<int, Question> questionLeadership = {
-		{0, {"WHAT LEADERSHIP STYLE DOES NOT INVOLVE TEAMMATES DECISIONS ?", {"AUTOCRATIC", "DEMOCRATIC", "SITUATIONAL"}, "AUTOCRATIC"}},
-		{1, {"EMOTIONAL INTELLIGENCE IS REQUIRED FOR LEADERS", {"YES", "NO", "NEVER"}, "YES"}},
-		{2, {"NOT A GOOD LEADER TRAIT", {"INTEGRITY", "MICROMANAGEMENT", "EMPATHY"}, "MICROMANAGEMENT"}},
-		{3, {"SKILL FOR A SUCCESSFUL LEADERSHIP", {"COMMUNICATION", "WORKING ALONE", "SHUTTING UP"}, "COMMUNICATION"}}
+static std::map<int, Question> questionML = {
+		{0, {"WHAT IS THE GOAL OF SUPERVISED LEARNING?", {"PREDICTIONS", "PATTERNS", "SUMMARIZE"}, "PREDICTIONS"}},
+		{1, {"WHAT IS THE GOAL OF UNSUPERVISED LEARNING?", {"PREDICTIONS", "SUMMARIZE", "PATTERNS"}, "PATTERNS"}},
+		{2, {"WHAT TO DO TO EVALUATE CLASSIFICATION?", {"CONFUSION MATRIX", "FEATURE EXTRACTION", "TUNING"}, "CONFUSION MATRIX"}},
+		{3, {"WHAT IS ENSEMBLE LEARNING?", {"SINGULAR APPROACH", "MULTIPLE MODELS", "ISOLATION PREDICTIONS"}, "MULTIPLE MODELS"}}
 };
 int pointerX;
 int pointerY;
-
 internal void jeopardy(Input* input, float dt) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
@@ -242,12 +282,14 @@ internal void jeopardy(Input* input, float dt) {
 	if (pointerY == 0) {
 		if (pointerX == 0) {
 			draw_text("ALGORITHM", -80, 20, 1, 0x48FFFF);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 1;
@@ -255,12 +297,14 @@ internal void jeopardy(Input* input, float dt) {
 		}
 		else {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_text("SEPM", 20, 20, 1, 0x48FFFF);
+			draw_text("JAVA", 20, 20, 1, 0x48FFFF);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
-			draw_text("QUESTION RELATING TO THE SEPM COURSE.", -80, -10, 0.4, 0xFFFFFF);
-			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN TEAMS.", -80, -20, 0.4, 0xFFFFFF);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
+			draw_text("QUESTION RELATING TO THE JAVA LANGUAGE.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE KNOWLEDGE OF JAVA.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
@@ -270,12 +314,14 @@ internal void jeopardy(Input* input, float dt) {
 	else if (pointerY == 1) {
 		if (pointerX == 0) {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_text("BITS", -80, 10, 1, 0x48FFFF);
-			draw_lowercase_letter("leadership", 20, 10, 0.7f, 0x888888);
+			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
@@ -283,12 +329,14 @@ internal void jeopardy(Input* input, float dt) {
 		}
 		else {
 			draw_lowercase_letter("algorithm", -80, 20, 0.7f, 0x888888);
-			draw_lowercase_letter("sepm", 20, 20, 0.7f, 0x888888);
+			draw_lowercase_letter("java", 20, 20, 0.7f, 0x888888);
 			draw_lowercase_letter("bits", -80, 10, 0.7f, 0x888888);
-			draw_text("LEADERSHIP", 20, 10, 1, 0x48FFFF);
-			draw_text("QUESTION RELATING TO LEADERSHIP.", -80, -10, 0.4, 0xFFFFFF);
-			draw_text("ASKS ABOUT THE SKILLS NEEDED TO LEAD A GROUP.", -80, -20, 0.4, 0xFFFFFF);
+			draw_text("ML", 20, 10, 1, 0x48FFFF);
+			draw_text("QUESTION RELATING TO MACHINE LEARNING.", -80, -10, 0.4, 0xFFFFFF);
+			draw_text("ASKS ABOUT THE MACHINE LEARNING CONCEPTS.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic1 = true;
+				playMusic = false;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
@@ -300,22 +348,62 @@ internal void jeopardy(Input* input, float dt) {
 	}
 }
 
-// Test question function to use in the gameplay 
+internal void pauseScreen(Input* input, float dt) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	if (pressed(BUTTON_W)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_S)) {
+		up_down = 1;
+	}
+
+	if (up_down == 0) {
+		draw_text("RESUME", -80, -10, 1, 0x48FFFF);
+		draw_lowercase_letter("exit to menu", -80, -20, 0.7f, 0x888888);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_GAMEPLAY;
+		}
+	}
+	else {
+		draw_lowercase_letter("resume", -80, -10, 0.7f, 0x888888);
+		draw_text("EXIT TO MENU", -80, -20, 1, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			playMusic = true;
+			playMusic2 = false;
+			playMusic5 = false;
+			player_1_score = 0;
+			player_2_score = 0;
+			current_gamemode = GM_UI;
+		}
+	}
+}
+
+const char* box[] = {
+	"00000000",
+	"0      0",
+	"0      0",
+	"0      0",
+	"0      0",
+	"0      0",
+	"00000000",
+};
+
 internal void testQuestion(Input* input, int questionIndex, float dt) {
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x464651);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x000000);
+	pressEnterAnimation(dt);
+	pressQuicklyAnimation(dt);
 	std::map<int, Question> questions;
 	if (questionType == 1) {
 		questions = questionAlgo;
 	}
 	else if (questionType == 2) {
-		questions = questionSEPM;
+		questions = questionJava;
 	}
 	else if (questionType == 3) {
 		questions = questionBITS;
 	}
 	else {
-		questions = questionLeadership;
+		questions = questionML;
 	}
 
 	// Seed the random number generator with the current time
@@ -330,7 +418,8 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 		const char* correctAnswer = currentQuestion.correctAnswer;
 
 		// Display the question
-		draw_text(questionText, -80, 30, 0.75, 0x000000);
+		draw_text(questionText, -80, 20, 0.4, 0xFFFF00);
+
 
 		if (pressed(BUTTON_I)) {
 			display = 1;
@@ -344,19 +433,38 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			display = 3;
 		}
 		if (display == 1) {
-			draw_text(answerOptions[0], -80, -10, 1, 0x888888);
-			draw_text(answerOptions[1], 20, -10, 1, 0x000000);
-			draw_text(answerOptions[2], -80, -30, 1, 0x000000);
+
+			draw_text("I", -78, 0.5, 0.5, 0x48FFFF);
+			draw_text(answerOptions[0], -80, -10, 0.6, 0x48FFFF);
+			render_ascii_art(box, 9, 7, -81, 2, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+			draw_text("O", 20.7, 0.5, 0.5, 0x888888);
+			draw_text(answerOptions[1], 20, -10, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, 18, 2, 1, 0x888888, 0x888888, 0x888888);
+			draw_text("K", -78.4, -20.5, 0.5, 0x888888);
+			draw_text(answerOptions[2], -80, -30, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, -81, -19, 1, 0x888888, 0x888888, 0x888888);
 		}
 		else if (display == 2) {
-			draw_text(answerOptions[0], -80, -10, 1, 0x000000); // Display first answer option
-			draw_text(answerOptions[1], 20, -10, 1, 0x888888); // Display second answer option
-			draw_text(answerOptions[2], -80, -30, 1, 0x000000); // Display third answer option
+			draw_text("I", -78, 0.5, 0.5, 0x888888);
+			draw_text(answerOptions[0], -80, -10, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, -81, 2, 1, 0x888888, 0x888888, 0x888888);
+			draw_text("O", 20.7, 0.5, 0.5, 0x48FFFF);
+			draw_text(answerOptions[1], 20, -10, 0.6, 0x48FFFF);
+			render_ascii_art(box, 9, 7, 18, 2, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+			draw_text("K", -78.4, -20.5, 0.5, 0x888888);
+			draw_text(answerOptions[2], -80, -30, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, -81, -19, 1, 0x888888, 0x888888, 0x888888);
 		}
-		else {
-			draw_text(answerOptions[0], -80, -10, 1, 0x000000); // Display first answer option
-			draw_text(answerOptions[1], 20, -10, 1, 0x000000); // Display second answer option
-			draw_text(answerOptions[2], -80, -30, 1, 0x888888); // Display third answer option
+		else{
+			draw_text("I", -78, 0.5, 0.5, 0x888888);
+			draw_text(answerOptions[0], -80, -10, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, -81, 2, 1, 0x888888, 0x888888, 0x888888);
+			draw_text("O", 20.7, 0.5, 0.5, 0x888888);
+			draw_text(answerOptions[1], 20, -10, 0.6, 0x888888);
+			render_ascii_art(box, 9, 7, 18, 2, 1, 0x888888, 0x888888, 0x888888);
+			draw_text("K", -78.4, -20.6, 0.5, 0x48FFFF);
+			draw_text(answerOptions[2], -80, -30, 0.6, 0x48FFFF);
+			render_ascii_art(box, 9, 7, -81, -19, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
 		}
 
 		if (pressed(BUTTON_ENTER)) {
@@ -388,38 +496,18 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 	}
 }
 
-internal void pauseScreen(Input* input, float dt) {
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
-	if (pressed(BUTTON_W)) {
-		up_down = 0;
-	}
-	if (pressed(BUTTON_S)) {
-		up_down = 1;
-	}
-
-	if (up_down == 0) {
-		draw_text("RESUME", -80, -10, 1, 0x48FFFF);
-		draw_lowercase_letter("exit to menu", -80, -20, 0.7f, 0x888888);
-		if (pressed(BUTTON_ENTER)) {
-			current_gamemode = GM_GAMEPLAY;
-		}
-	}
-	else {
-		draw_lowercase_letter("resume", -80, -10, 0.7f, 0x888888);
-		draw_text("EXIT TO MENU", -80, -20, 1, 0x48FFFF);
-		if (pressed(BUTTON_ENTER)) {
-			current_gamemode = GM_UI;
-		}
-	}
-}
-
-// The main gameplay method 
+u32 ballColor = 0xFF49B3;
+u32 slideColor = 0x6666FF * 2;
+float elapsedTime3 = 0.0;
+float intervalAppear = 3.0;
+u32 lower;
+u32 upper;
+float tracking_speed_factor;
+float overall_speed;
 internal void gameplay(Input* input, float dt) {
 	
 	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
-
 	draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x464651, lower, upper);
 	elapsedTime3 += dt;
 	if (elapsedTime3 <= intervalAppear) {
@@ -459,7 +547,6 @@ internal void gameplay(Input* input, float dt) {
 		player_2_p = 0;
 		if (is_down(BUTTON_W)) player_2_ddp += 0;
 		if (is_down(BUTTON_S)) player_2_ddp -= 0;
-
 	}
 	else {
 		if (is_down(BUTTON_W)) player_2_ddp += 2000;
@@ -468,7 +555,6 @@ internal void gameplay(Input* input, float dt) {
 
 	simulate_player(&player_1_p, &player_1_dp, player_1_ddp, dt);
 	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
-
 	if (answer1.isCorrect == true && random2 == 1) {
 		player_2_half_size_y = 16;
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
@@ -496,7 +582,6 @@ internal void gameplay(Input* input, float dt) {
 	else {
 		draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x383841, 0x383841, 0x383841);
 	}
-
 	if (slowMo) {
 		ball_p_x += ball_dp_x * 0.1f * dt;
 		ball_p_y += ball_dp_y * 0.1f * dt;
@@ -514,7 +599,6 @@ internal void gameplay(Input* input, float dt) {
 	else {
 		ball_p_x += ball_dp_x * dt;
 		ball_p_y += ball_dp_y * dt;
-
 		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, ballColor);
 
 
@@ -539,7 +623,6 @@ internal void gameplay(Input* input, float dt) {
 		}
 		
 
-		
 
 		if (ball_p_y + ball_half_size > arena_half_size_y) {
 			ball_p_y = arena_half_size_y - ball_half_size;
@@ -572,9 +655,7 @@ internal void gameplay(Input* input, float dt) {
 			ball_p_y = 0;
 			player_2_score++;
 			ballColor = 0xFF49B3;
-
 		}
-
 
 	}
 
@@ -635,37 +716,13 @@ internal void gameplay(Input* input, float dt) {
 	}
 }
 
-internal void loseScreen(Input* input, float dt) {
-	clear_screen(0xffaa33);
-	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
-	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
-	pressEscapeAnimation(dt);
-	draw_text("YOU GOT YOUR BACK BLOWN OUT!", -60, 30, 0.75, 0x8C68FF);
-	draw_text("AI", -18, 20, 1, 0xFF0C0C);
-	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
-	draw_text("P", -40, 0, 1.5, 0x06CFCE);
-	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
-	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
-	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
-	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
-	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
-	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
-	if (pressed(BUTTON_ESCAPE)) {
-		current_gamemode = GM_UI;
-		player_1_score = 0;
-		player_2_score = 0;
-		answer1.isCorrect = false;
-		answer1.question = false;
-	}
+
+internal void extraGameplay(Input* input, float dt) {
 }
-
-
 float yOffset;
 float xOffset;
 float titleX = 0.0f;
 float titleY = 0.0f;
-
-
 
 internal void userUI(Input* input, float dt) {
 
@@ -708,6 +765,8 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("extra mode", -80, -20, 0.7f, 0x888888);
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic = false;
+				playMusic2 = true;
 				random3 = rand() % 2;
 				current_gamemode = GM_MULTIPLAYER;
 			}
@@ -720,6 +779,8 @@ internal void userUI(Input* input, float dt) {
 			draw_text("EXTRA MODE", -80, -20, 1, 0x48FFFF);
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
+				playMusic = false;
+				playMusic2 = true;
 				random = getRandomNumber(2);
 				current_gamemode = GM_EXTRA_GAMEPLAY;
 			}
@@ -736,10 +797,59 @@ internal void userUI(Input* input, float dt) {
 	}
 }
 
+internal void winScreen(Input* input, float dt) {
 
-internal void extraGameplay(Input* input, float dt) {
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
+	draw_text("YOU MURKED THE AI!", -50, 30, 1, 0x8C68FF);
+	draw_text("P", -18, 20, 1, 0x06CFCE);
+	draw_number(1, -13, 17, 1.4, 0x06CFCE);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+		playMusic3 = false;
+		playMusic2 = false;
+	}
 }
 
+internal void loseScreen(Input* input, float dt) {
+	clear_screen(0xffaa33);
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x292A50);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x23232B);
+	pressEscapeAnimation(dt);
+	draw_text("YOU GOT YOUR BACK BLOWN OUT!", -60, 30, 0.75, 0x8C68FF);
+	draw_text("AI", -18, 20, 1, 0xFF0C0C);
+	draw_lowercase_letter("wins", 0, 20, 1, 0xECECED);
+	draw_text("P", -40, 0, 1.5, 0x06CFCE);
+	draw_number(1, -32.5, -4.6, 2.2, 0x06CFCE);
+	draw_number(player_1_score, -45, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", -35, -18, 0.5, 0xbbffbb);
+	draw_text("AI", 30, 0, 1.5, 0xFF0C0C);
+	draw_number(player_2_score, 27.5, -20, 1.5, 0xbbffbb);
+	draw_lowercase_letter("pts", 37.5, -18, 0.5, 0xbbffbb);
+	if (pressed(BUTTON_ESCAPE)) {
+		current_gamemode = GM_UI;
+		player_1_score = 0;
+		player_2_score = 0;
+		answer1.isCorrect = false;
+		answer1.question = false;
+		playMusic3 = false;
+		playMusic2 = false;
+	}
+}
 //main method called in win main
 internal void simulate_game(Input* input, float dt) {
 
@@ -747,6 +857,10 @@ internal void simulate_game(Input* input, float dt) {
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0xffffff);
 	if (current_gamemode == GM_GAMEPLAY) {
 		gameplay(input, dt);
+		if (player_1_score >= 5) {
+			playMusic1 = false;
+			playMusic5 = true;
+		}
 		if (player_1_score >= 10) {
 			current_gamemode = GM_WINSCREEN;
 		}
@@ -760,10 +874,14 @@ internal void simulate_game(Input* input, float dt) {
 	else if (current_gamemode == GM_EXTRA_GAMEPLAY) {
 	}
 	else if (current_gamemode == GM_WINSCREEN) {
+		playMusic5 = false;
+		playMusic3 = true;
 		clear_screen(0xffaa33);
 		winScreen(input, dt);
 	}
 	else if (current_gamemode == GM_LOSESCREEN) {
+		playMusic5 = false;
+		playMusic4 = true;
 		clear_screen(0xffaa33);
 		loseScreen(input, dt);
 	}
@@ -771,9 +889,11 @@ internal void simulate_game(Input* input, float dt) {
 		pauseScreen(input, dt);
 	}
 	else {
+		playMusic = true;
 		userUI(input,dt);
 	}
 }
+
 
 
 float elapsedTime6 = 0.0;
