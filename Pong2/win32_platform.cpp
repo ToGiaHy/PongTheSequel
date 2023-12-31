@@ -1,5 +1,9 @@
+
 #include "utilities.cpp"
 #include <windows.h>
+#include <MMSystem.h>
+#include <thread>
+#include <stdio.h>
 
 global_variable bool running = true;
 
@@ -16,8 +20,25 @@ global_variable Render_background render_background;
 #include "controls.cpp"
 #include "renderer.cpp"
 #include "game.cpp";
-WNDPROC Wndproc;
 
+WNDPROC Wndproc;
+internal void PlayMusic() {
+	PlaySound(TEXT("MainMenuMusic.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+internal void PlayMusic2() {
+	PlaySound(TEXT("FirstPhase.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+internal void PlayMusic3() {
+	PlaySound(TEXT("MultiplayerMusic.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}internal void PlayMusic4() {
+	PlaySound(TEXT("Victory.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+internal void PlayMusic5() {
+	PlaySound(TEXT("Defeat.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+internal void PlayMusic6() {
+	PlaySound(TEXT("SecondPhase.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
 LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
@@ -52,6 +73,8 @@ LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return result;
 }
 
+
+
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	WNDCLASS windowClass = {};
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -83,7 +106,18 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 		QueryPerformanceFrequency(&perf);
 		performance_frequency = (float)perf.QuadPart;
 	}
-
+	std::thread musicThread(PlayMusic); // Start a separate thread for playing music
+	musicThread.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread2(PlayMusic2); // Start a separate thread for playing music
+	musicThread2.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread3(PlayMusic3); // Start a separate thread for playing music
+	musicThread3.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread4(PlayMusic4); // Start a separate thread for playing music
+	musicThread4.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread5(PlayMusic5); // Start a separate thread for playing music
+	musicThread5.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread6(PlayMusic6); // Start a separate thread for playing music
+	musicThread6.detach(); // Detach the thread (let it run independently)
 	while (running) {
 		MSG message;
 
@@ -112,10 +146,10 @@ input.buttons[b].is_down = is_down;\
 					process_button(BUTTON_LEFT, VK_LEFT);
 					process_button(BUTTON_RIGHT, VK_RIGHT);
 					process_button(BUTTON_ENTER, VK_RETURN);
-					process_button(BUTTON_J, 'J');
-					process_button(BUTTON_G, 'G');
-					process_button(BUTTON_H, 'H');
-					process_button(BUTTON_N, 'N');
+					process_button(BUTTON_I, 'I');
+					process_button(BUTTON_O, 'O');
+					process_button(BUTTON_K, 'K');
+					process_button(BUTTON_ESCAPE, VK_ESCAPE);
 				}
 			}break;
 			default: {
@@ -124,9 +158,61 @@ input.buttons[b].is_down = is_down;\
 			}
 			}
 		}
-
+		//winPlayer(&input, delta_time);
+		//testQuestion(&input, 1, delta_time);
 		simulate_game(&input, delta_time);
+		if (quit) {
+			playMusic = false;
+			playMusic2 = false;
+			playMusic3 = false;
+			playMusic4 = false;
+			playMusic5 = false;
+			playMusic1 = false;
+			break;
 
+		}
+		if (playMusic && !musicThread.joinable()) {
+			musicThread = std::thread(PlayMusic);
+		}
+		else if (!playMusic && musicThread.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread.join(); // Wait for the music thread to finish
+		}
+		if (playMusic1 && !musicThread2.joinable()) {
+			musicThread2 = std::thread(PlayMusic2);
+		}
+		else if (!playMusic1 && musicThread2.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread2.join(); // Wait for the music thread to finish
+		}
+		if (playMusic2 && !musicThread3.joinable()) {
+			musicThread3 = std::thread(PlayMusic3);
+		}
+		else if (!playMusic2 && musicThread3.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread3.join(); // Wait for the music thread to finish
+		}
+		if (playMusic3 && !musicThread4.joinable()) {
+			musicThread4 = std::thread(PlayMusic4);
+		}
+		else if (!playMusic3 && musicThread4.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread4.join(); // Wait for the music thread to finish
+		}
+		if (playMusic4 && !musicThread5.joinable()) {
+			musicThread5 = std::thread(PlayMusic5);
+		}
+		else if (!playMusic4 && musicThread5.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread5.join(); // Wait for the music thread to finish
+		}
+		if (playMusic5 && !musicThread6.joinable()) {
+			musicThread6 = std::thread(PlayMusic6);
+		}
+		else if (!playMusic5 && musicThread6.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread6.join(); // Wait for the music thread to finish
+		}
 		StretchDIBits(hdc, 0, 0, render_background.width, render_background.height, 0, 0, render_background.width, render_background.height, render_background.memory, &render_background.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 
 		LARGE_INTEGER frame_end_time;
