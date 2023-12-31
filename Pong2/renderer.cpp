@@ -1,5 +1,4 @@
 
-//clear screen function
 internal void clear_screen(unsigned int color) {
 	unsigned int* pixel = (unsigned int*)render_background.memory;
 	for (int y = 0; y < render_background.height; y++) {
@@ -10,7 +9,6 @@ internal void clear_screen(unsigned int color) {
 	}
 }
 
-//draw rectangle in pixels in the main UI
 internal void draw_rect_in_pixels(int x0, int y0, int x1, int y1, u32 color) {
 
 	x0 = clamp(0, x0, render_background.width);
@@ -26,9 +24,27 @@ internal void draw_rect_in_pixels(int x0, int y0, int x1, int y1, u32 color) {
 		}
 	}
 }
-global_variable float render_scale = 0.01f;
 
-//draw the arena borders around the game
+internal void draw_rect_with_glow(int x0, int y0, int x1, int y1, u32 color, u32 glowColor) {
+	// Define glow parameters
+	const int glowSize = 2; // Adjust the size of the glow
+	const int glowOpacity = 100; // Adjust the opacity of the glow (0-255)
+
+	// Render the glow effect
+	for (int glow = 1; glow <= glowSize; glow++) {
+		// Draw rectangles around the original rectangle with increased opacity for the glow
+		draw_rect_in_pixels(x0 - glow, y0 - glow, x1 + glow, y1 + glow,
+			(glowOpacity << 24) | (glowColor & 0x00FFFFFF));
+	}
+
+	// Draw the original rectangle on top
+	draw_rect_in_pixels(x0, y0, x1, y1, color);
+}
+
+
+
+
+global_variable float render_scale = 0.01f;
 internal void
 draw_arena_borders(float arena_x, float arena_y, u32 color) {
 	arena_x *= render_background.height * render_scale;
@@ -38,7 +54,6 @@ draw_arena_borders(float arena_x, float arena_y, u32 color) {
 	int x1 = (int)((float)render_background.width * .5f + arena_x);
 	int y0 = (int)((float)render_background.height * .5f - arena_y);
 	int y1 = (int)((float)render_background.height * .5f + arena_y);
-
 	draw_rect_in_pixels(0, 0, render_background.width, y0, color);
 	draw_rect_in_pixels(0, y1, x1, render_background.height, color);
 	draw_rect_in_pixels(0, y0, x0, y1, color);
@@ -60,7 +75,6 @@ draw_arena_borders_special(float arena_x, float arena_y, u32 color, u32 color1, 
 	draw_rect_in_pixels(x1, y0, render_background.width, render_background.height, color);
 }
 
-//draw a rectangle with an increase in size
 internal void draw_rect(float x, float y, float half_size_x, float half_size_y, u32 color) {
 	x *= render_background.height * render_scale;
 	y *= render_background.height * render_scale;
@@ -79,7 +93,218 @@ internal void draw_rect(float x, float y, float half_size_x, float half_size_y, 
 	draw_rect_in_pixels(x0, y0, x1, y1, color);
 }
 
-//uppercase text ascii art
+
+const char* undercaseletters[][7] = {
+	//undercase
+	"    ", // 'a'
+	"    ",
+	"0000",
+	"   0",
+	"0000",
+	"0  0",
+	"0000",
+
+	"    ", // 'b'
+	"    ",
+	"0   ",
+	"0   ",
+	"0000",
+	"0  0",
+	"0000",
+
+	"    ", // 'c'
+	"    ",
+	" 000",
+	"0   ",
+	"0   ",
+	"0   ",
+	" 000",
+
+	"    ", // 'd'
+	"    ",
+	"   0",
+	"   0",
+	"0000",
+	"0  0",
+	"0000",
+
+	"    ", // 'e'
+	"    ",
+	"0000",
+	"0  0",
+	"0000",
+	"0",
+	"0000",
+
+	"    ", // 'f'
+	"    ",
+	" 00 ",
+	"0  ",
+	"000 ",
+	"0",
+	"0",
+
+	"    ", // 'g'
+	"    ",
+	" 000",
+	"0   ",
+	"0 00",
+	"0  0",
+	" 000",
+
+	"    ", // 'h'
+	"    ",
+	"0   ",
+	"0   ",
+	"0000",
+	"0  0",
+	"0  0",
+
+	"  ", // 'i'
+	"  ",
+	"0 ",
+	"  ",
+	"0 ",
+	"0 ",
+	"00",
+
+	"   ", // 'j'
+	"   ",
+	" 0 ",
+	"  ",
+	" 0",
+	" 0",
+	"00",
+
+	"    ", // 'k'
+	"    ",
+	"0  0",
+	"0 0 ",
+	"00  ",
+	"0 0 ",
+	"0  0",
+
+	"    ", // 'l'
+	"    ",
+	"0   ",
+	"0   ",
+	"0   ",
+	"0   ",
+	"0000",
+
+	"     ", // 'm'
+	"     ",
+	"0 0 0",
+	"00 00",
+	"0 0 0",
+	"0   0",
+	"0   0",
+
+	"    ", // 'n'
+	"    ",
+	"00  ",
+	"0 0 ",
+	"0 0 ",
+	"0 0 ",
+	"0 0 ",
+
+	"    ", // 'o'
+	"    ",
+	" 00 ",
+	"0  0",
+	"0  0",
+	"0  0",
+	" 00 ",
+
+	"    ", // 'p'
+	"    ",
+	"000 ",
+	"0  0",
+	"000 ",
+	"0   ",
+	"0   ",
+
+	"    ", // 'q'
+	"    ",
+	" 00 ",
+	"0  0",
+	"0  0",
+	"0 00",
+	" 00 ",
+
+	"    ", // 'r'
+	"    ",
+	"000 ",
+	"0  0",
+	"0   ",
+	"0   ",
+	"0   ",
+
+	"    ", // 's'
+	"    ",
+	" 000",
+	"0   ",
+	" 00 ",
+	"   0",
+	"000 ",
+
+	"    ", // 't'
+	"    ",
+	"0000",
+	" 0  ",
+	" 0  ",
+	" 0  ",
+	" 0  ",
+
+	"    ", // 'u'
+	"    ",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	" 00 ",
+
+	"    ", // 'v'
+	"    ",
+	"0  0",
+	"0  0",
+	"0  0",
+	"0  0",
+	" 00 ",
+
+	"     ", // 'w'
+	"     ",
+	"0   0",
+	"0   0",
+	"0 0 0",
+	"00 00",
+	"0   0",
+
+	"    ", // 'x'
+	"    ",
+	"0  0",
+	"0  0",
+	" 00 ",
+	"0  0",
+	"0  0",
+
+	"    ", // 'y'
+	"    ",
+	"0  0",
+	"0  0",
+	" 00 ",
+	" 0  ",
+	" 0  ",
+
+	"    ", // 'z'
+	"    ",
+	"0000",
+	"   0",
+	"  0 ",
+	" 0  ",
+	"0000",
+};
+
 const char* letters[][7] = {
 	" 00",
 	"0  0",
@@ -337,24 +562,66 @@ const char* letters[][7] = {
 	"  0",
 	"000",
 
-  "   0",
-  "  000",
-  " 0 0 0",
-  "0  0  0",
-  "   0",
-  "   0",
-  "   0",
-  "   0",
+  "       ",
+  "   0   ",
+  "  000  ",
+  " 00000 ",
+  "   0   ",
+  "   0   ",
+  "   0   ",
+  "       ",
 
-  "   0",
-  "   0",
-  "   0",
-  "0  0  0",
-  " 0 0 0",
-  "  000",
-  "   0 ",
+  "   0   ",
+  "   0   ",
+  "   0   ",
+  " 00000 ",
+  "  000  ",
+  "   0   ",
+  "       ",
 
+  "       ",
+  "    0  ",
+  "    00 ",
+  "0000000",
+  "    00 ",
+  "    0  ",
+  "       ",
+
+  "       ",
+  "  0    ",
+  " 00    ",
+  "0000000",
+  " 00    ",
+  "  0    ",
+  "       ",
 };
+void draw_lowercase_letter(const char* text, float x, float y, float size, u32 color) {
+	float half_size = size * .5f;
+	float original_y = y;
+
+	while (*text) {
+		if (*text != 32 && *text >= 'a' && *text <= 'z') {
+			const char** letter = undercaseletters[*text - 'a'];
+			float original_x = x;
+
+			for (int i = 0; i < 7; i++) {
+				const char* row = letter[i];
+				while (*row) {
+					if (*row == '0') {
+						draw_rect(x, y, half_size, half_size, color);
+					}
+					x += size;
+					row++;
+				}
+				y -= size;
+				x = original_x;
+			}
+		}
+		text++;
+		x += size * 6.f; // Adjust spacing between characters
+		y = original_y;
+	}
+}
 
 
 internal void draw_text(const char* text, float x, float y, float size, u32 color) {
@@ -372,6 +639,8 @@ internal void draw_text(const char* text, float x, float y, float size, u32 colo
 			else if (*text == ']') letter = letters[31];
 			else if (*text == '>') letter = letters[32];
 			else if (*text == '<') letter = letters[33];
+			else if (*text == ')') letter = letters[34];
+			else if (*text == '(') letter = letters[35];
 			else letter = letters[*text - 'A'];
 			float original_x = x;
 
@@ -394,7 +663,35 @@ internal void draw_text(const char* text, float x, float y, float size, u32 colo
 	}
 }
 
-//draw number method
+
+void render_ascii_art(const char* ascii_art[], int width, int height, float x, float y, float size, u32 color, u32 secondColor, u32 thirdColor) {
+	float half_size = size * .5f;
+	float original_y = y;
+
+	for (int i = 0; i < height; ++i) {
+		const char* row = ascii_art[i];
+		float original_x = x;
+
+		while (*row) {
+			if (*row == '0') {
+				draw_rect(x, y, half_size, half_size, color);
+			}
+			if (*row == '1') {
+				draw_rect(x, y, half_size, half_size, secondColor);
+			}
+			if (*row == '2') {
+				draw_rect(x, y, half_size, half_size, thirdColor);
+			}
+
+			x += size;
+			row++;
+		}
+		y -= size;
+		x = original_x;
+	}
+}
+
+
 internal void
 draw_number(int number, float x, float y, float size, u32 color) {
 	float half_size = size * .5f;
@@ -487,274 +784,5 @@ draw_number(int number, float x, float y, float size, u32 color) {
 		} break;
 		}
 
-	}
-}
-
-//lowercase ascii art
-const char* undercaseletters[][7] = {
-	//undercase
-	"    ", // 'a'
-	"    ",
-	"0000",
-	"   0",
-	"0000",
-	"0  0",
-	"0000",
-
-	"    ", // 'b'
-	"    ",
-	"0   ",
-	"0   ",
-	"0000",
-	"0  0",
-	"0000",
-
-	"    ", // 'c'
-	"    ",
-	" 000",
-	"0   ",
-	"0   ",
-	"0   ",
-	" 000",
-
-	"    ", // 'd'
-	"    ",
-	"   0",
-	"   0",
-	"0000",
-	"0  0",
-	"0000",
-
-	"    ", // 'e'
-	"    ",
-	"0000",
-	"0  0",
-	"0000",
-	"0",
-	"0000",
-
-	"    ", // 'f'
-	"    ",
-	" 00 ",
-	"0  ",
-	"000 ",
-	"0",
-	"0",
-
-	"    ", // 'g'
-	"    ",
-	" 000",
-	"0   ",
-	"0 00",
-	"0  0",
-	" 000",
-
-	"    ", // 'h'
-	"    ",
-	"0   ",
-	"0   ",
-	"0000",
-	"0  0",
-	"0  0",
-
-	"  ", // 'i'
-	"  ",
-	"0 ",
-	"  ",
-	"0 ",
-	"0 ",
-	"00",
-
-	"   ", // 'j'
-	"   ",
-	" 0 ",
-	"  ",
-	" 0",
-	" 0",
-	"00",
-
-	"    ", // 'k'
-	"    ",
-	"0  0",
-	"0 0 ",
-	"00  ",
-	"0 0 ",
-	"0  0",
-
-	"    ", // 'l'
-	"    ",
-	"0   ",
-	"0   ",
-	"0   ",
-	"0   ",
-	"0000",
-
-	"     ", // 'm'
-	"     ",
-	"0 0 0",
-	"00 00",
-	"0 0 0",
-	"0   0",
-	"0   0",
-
-	"    ", // 'n'
-	"    ",
-	"00  ",
-	"0 0 ",
-	"0 0 ",
-	"0 0 ",
-	"0 0 ",
-
-	"    ", // 'o'
-	"    ",
-	" 00 ",
-	"0  0",
-	"0  0",
-	"0  0",
-	" 00 ",
-
-	"    ", // 'p'
-	"    ",
-	"000 ",
-	"0  0",
-	"000 ",
-	"0   ",
-	"0   ",
-
-	"    ", // 'q'
-	"    ",
-	" 00 ",
-	"0  0",
-	"0  0",
-	"0 00",
-	" 00 ",
-
-	"    ", // 'r'
-	"    ",
-	"000 ",
-	"0  0",
-	"0   ",
-	"0   ",
-	"0   ",
-
-	"    ", // 's'
-	"    ",
-	" 000",
-	"0   ",
-	" 00 ",
-	"   0",
-	"000 ",
-
-	"    ", // 't'
-	"    ",
-	"0000",
-	" 0  ",
-	" 0  ",
-	" 0  ",
-	" 0  ",
-
-	"    ", // 'u'
-	"    ",
-	"0  0",
-	"0  0",
-	"0  0",
-	"0  0",
-	" 00 ",
-
-	"    ", // 'v'
-	"    ",
-	"0  0",
-	"0  0",
-	"0  0",
-	"0  0",
-	" 00 ",
-
-	"     ", // 'w'
-	"     ",
-	"0   0",
-	"0   0",
-	"0 0 0",
-	"00 00",
-	"0   0",
-
-	"    ", // 'x'
-	"    ",
-	"0  0",
-	"0  0",
-	" 00 ",
-	"0  0",
-	"0  0",
-
-	"    ", // 'y'
-	"    ",
-	"0  0",
-	"0  0",
-	" 00 ",
-	" 0  ",
-	" 0  ",
-
-	"    ", // 'z'
-	"    ",
-	"0000",
-	"   0",
-	"  0 ",
-	" 0  ",
-	"0000",
-};
-
-//draw ascii art
-void render_ascii_art(const char* ascii_art[], int width, int height, float x, float y, float size, u32 color, u32 secondColor, u32 thirdColor) {
-	float half_size = size * .5f;
-	float original_y = y;
-
-	for (int i = 0; i < height; ++i) {
-		const char* row = ascii_art[i];
-		float original_x = x;
-
-		while (*row) {
-			if (*row == '0') {
-				draw_rect(x, y, half_size, half_size, color);
-			}
-			if (*row == '1') {
-				draw_rect(x, y, half_size, half_size, secondColor);
-			}
-			if (*row == '2') {
-				draw_rect(x, y, half_size, half_size, thirdColor);
-			}
-
-			x += size;
-			row++;
-		}
-		y -= size;
-		x = original_x;
-	}
-}
-
-//draw lowercase words
-void draw_lowercase_letter(const char* text, float x, float y, float size, u32 color) {
-	float half_size = size * .5f;
-	float original_y = y;
-
-	while (*text) {
-		if (*text != 32 && *text >= 'a' && *text <= 'z') {
-			const char** letter = undercaseletters[*text - 'a'];
-			float original_x = x;
-
-			for (int i = 0; i < 7; i++) {
-				const char* row = letter[i];
-				while (*row) {
-					if (*row == '0') {
-						draw_rect(x, y, half_size, half_size, color);
-					}
-					x += size;
-					row++;
-				}
-				y -= size;
-				x = original_x;
-			}
-		}
-		text++;
-		x += size * 6.f; // Adjust spacing between characters
-		y = original_y;
 	}
 }

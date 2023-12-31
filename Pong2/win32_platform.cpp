@@ -143,12 +143,34 @@ input.buttons[b].is_down = is_down;\
 					process_button(BUTTON_S, 'S');
 					process_button(BUTTON_A, 'A');
 					process_button(BUTTON_D, 'D');
+					process_button(BUTTON_Q, 'Q');
+					process_button(BUTTON_E, 'E');
+					process_button(BUTTON_R, 'R');
+					process_button(BUTTON_T, 'T');
+					process_button(BUTTON_Y, 'Y');
+					process_button(BUTTON_U, 'U');
+					process_button(BUTTON_I, 'I');
+					process_button(BUTTON_P, 'P');
+					process_button(BUTTON_F, 'F');
+					process_button(BUTTON_G, 'G');
+					process_button(BUTTON_H, 'H');
+					process_button(BUTTON_J, 'J');
+					process_button(BUTTON_L, 'L');
+					process_button(BUTTON_Z, 'Z');
+					process_button(BUTTON_X, 'X');
+					process_button(BUTTON_C, 'C');
+					process_button(BUTTON_V, 'V');
+					process_button(BUTTON_B, 'B');
+					process_button(BUTTON_M, 'M');
+					process_button(BUTTON_N, 'N');
 					process_button(BUTTON_LEFT, VK_LEFT);
 					process_button(BUTTON_RIGHT, VK_RIGHT);
 					process_button(BUTTON_ENTER, VK_RETURN);
-					process_button(BUTTON_I, 'I');
+					process_button(BUTTON_SHIFT, VK_SHIFT);
 					process_button(BUTTON_O, 'O');
 					process_button(BUTTON_K, 'K');
+					process_button(BUTTON_BACKSPACE, VK_BACK);
+					process_button(BUTTON_SPACE, VK_SPACE);
 					process_button(BUTTON_ESCAPE, VK_ESCAPE);
 				}
 			}break;
@@ -160,6 +182,10 @@ input.buttons[b].is_down = is_down;\
 		}
 		//winPlayer(&input, delta_time);
 		//testQuestion(&input, 1, delta_time);
+		//testQuestionMultiplayer(&input, 1, 1, delta_time);
+		//pickName(&input, delta_time,0);
+		//deleteProgress(&input, delta_time);
+		//leaderboards(&input, delta_time);
 		simulate_game(&input, delta_time);
 		if (quit) {
 			playMusic = false;
