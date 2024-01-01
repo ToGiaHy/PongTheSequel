@@ -39,6 +39,11 @@ internal void PlayMusic5() {
 internal void PlayMusic6() {
 	PlaySound(TEXT("SecondPhase.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
+
+internal void PlayMusic7() {
+	PlaySound(TEXT("LookThroughMyEyes.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+
 LRESULT CALLBACK windowCallBack(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result = 0;
@@ -118,6 +123,8 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 	musicThread5.detach(); // Detach the thread (let it run independently)
 	std::thread musicThread6(PlayMusic6); // Start a separate thread for playing music
 	musicThread6.detach(); // Detach the thread (let it run independently)
+	std::thread musicThread7(PlayMusic7); // Start a separate thread for playing music
+	musicThread7.detach(); // Detach the thread (let it run independently)
 	while (running) {
 		MSG message;
 
@@ -238,6 +245,13 @@ input.buttons[b].is_down = is_down;\
 		else if (!playMusic5 && musicThread6.joinable()) {
 			PlaySound(NULL, NULL, 0); // Stop the sound
 			musicThread6.join(); // Wait for the music thread to finish
+		}
+		if (playMusic6 && !musicThread7.joinable()) {
+			musicThread7 = std::thread(PlayMusic7);
+		}
+		else if (!playMusic6 && musicThread7.joinable()) {
+			PlaySound(NULL, NULL, 0); // Stop the sound
+			musicThread7.join(); // Wait for the music thread to finish
 		}
 		StretchDIBits(hdc, 0, 0, render_background.width, render_background.height, 0, 0, render_background.width, render_background.height, render_background.memory, &render_background.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 

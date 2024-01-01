@@ -20,6 +20,7 @@ static bool playMusic2 = false;
 static bool playMusic3 = false;
 static bool playMusic4 = false;
 static bool playMusic5 = false;
+static bool playMusic6 = false;
 static bool quit = false;
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
@@ -2238,10 +2239,14 @@ internal void highScore(Input* input, float dt) {
 		if (ball_p1_x - ball_half_size < -arena_half_size_x) {
 			ball_dp_x *= -1;
 			ball_dp_y = 0;
-			ball_p_x = 0;
-			ball_p_y = 0;
+			ball_p1_x = 0;
+			ball_p1_y = 0;
 			timer = 11;
 			slowMo = false;
+			answer.question = true;
+			answer.isCorrect = 2;
+			random = getRandomNumber(15);
+			random2 = getRandomNumber(100);
 			player_high_score--;
 		}
 	}
@@ -2472,7 +2477,7 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				playMusic = false;
-				playMusic2 = true;
+				playMusic6 = true;
 				random = getRandomNumber(15);
 				player_high_score = 5;
 				timer = 11;
@@ -2664,7 +2669,7 @@ internal void simulate_game(Input* input, float dt) {
 		pauseScreen(input, dt, 3);
 	}
 	else if (current_gamemode == GM_NAME) {
-		playMusic2 = false;
+		playMusic6 = false;
 		playMusic3 = true;
 		pickName(input, dt, player_1_score);
 	}
