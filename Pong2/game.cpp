@@ -86,6 +86,7 @@ enum Gamemode {
 	GM_WINSCREEN,
 	GM_LOSESCREEN,
 	GM_JEOPARDY,
+	GM_JEOPARDY_MP,
 	GM_WINPLAYER,
 	GM_MULTIPLAYER,
 	GM_LOADING,
@@ -95,6 +96,7 @@ enum Gamemode {
 	GM_NAME,
 	GM_DELETE,
 	GM_PAUSEHS
+
 };
 
 Gamemode current_gamemode;
@@ -118,27 +120,20 @@ int questionType;
 int loadingTime;
 bool pause;
 
+
 struct Answer {
-	bool question;   // Text representing the answer option
-	bool isCorrect;     // Indicates whether the answer is correct or not
-
-	// Constructor to initialize the Answer struct
-	Answer(bool question, bool isCorrect) : question(question), isCorrect(isCorrect) {}
-};
-
-struct AnswerHighScore {
 	bool question;   // Text representing the answer option
 	int isCorrect;     // Indicates whether the answer is correct or not
 
 	// Constructor to initialize the Answer struct
-	AnswerHighScore(bool question, int isCorrect) : question(question), isCorrect(isCorrect) {}
+	Answer(bool question, int isCorrect) : question(question), isCorrect(isCorrect) {}
 };
 
-AnswerHighScore answer(false, 0);
-Answer answer1(false, false);
-Answer answer2(false, false);
-Answer player1(false, false);
-Answer player2(false, false);
+Answer answer(false, 0);
+Answer answer1(true, 0);
+Answer answer2(true, 0);
+Answer player1(true, 0);
+Answer player2(true, 0);
 
 int pointerX;
 int pointerY;
@@ -420,7 +415,7 @@ internal void WASD(float dt) {
 
 
 
-internal void jeopardy(Input* input, float dt) {
+internal void jeopardy(Input* input, float dt, int gamemode) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	draw_text("CHOOSE YOUR QUESTION CATEGORY", -50, 35, 0.6, 0xFFFF00);
@@ -444,11 +439,14 @@ internal void jeopardy(Input* input, float dt) {
 			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
-			if (pressed(BUTTON_ENTER)) {
-				playMusic1 = true;
-				playMusic = false;
+			if (pressed(BUTTON_ENTER) && gamemode == 1) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
+				questionType = 1;
+			}
+			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
+				random3 = getRandomNumber(4);
+				current_gamemode = GM_MULTIPLAYER;
 				questionType = 1;
 			}
 		}
@@ -459,11 +457,14 @@ internal void jeopardy(Input* input, float dt) {
 			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE JAVA LANGUAGE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE KNOWLEDGE OF JAVA.", -80, -20, 0.4, 0xFFFFFF);
-			if (pressed(BUTTON_ENTER)) {
-				playMusic1 = true;
-				playMusic = false;
+			if (pressed(BUTTON_ENTER) && gamemode == 1) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
+				questionType = 2;
+			}
+			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
+				random3 = getRandomNumber(4);
+				current_gamemode = GM_MULTIPLAYER;
 				questionType = 2;
 			}
 		}
@@ -476,11 +477,14 @@ internal void jeopardy(Input* input, float dt) {
 			draw_lowercase_letter("ml", 20, 10, 0.7f, 0x888888);
 			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
-			if (pressed(BUTTON_ENTER)) {
-				playMusic1 = true;
-				playMusic = false;
+			if (pressed(BUTTON_ENTER) && gamemode == 1) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
+				questionType = 3;
+			}
+			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
+				random3 = getRandomNumber(4);
+				current_gamemode = GM_MULTIPLAYER;
 				questionType = 3;
 			}
 		}
@@ -491,11 +495,14 @@ internal void jeopardy(Input* input, float dt) {
 			draw_text("ML", 20, 10, 1, 0x48FFFF);
 			draw_text("QUESTION RELATING TO MACHINE LEARNING.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE MACHINE LEARNING CONCEPTS.", -80, -20, 0.4, 0xFFFFFF);
-			if (pressed(BUTTON_ENTER)) {
-				playMusic1 = true;
-				playMusic = false;
+			if (pressed(BUTTON_ENTER) && gamemode == 1) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
+				questionType = 4;
+			}
+			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
+				random3 = getRandomNumber(4);
+				current_gamemode = GM_MULTIPLAYER;
 				questionType = 4;
 			}
 		}
@@ -514,7 +521,7 @@ const char* box[] = {
 	"0      0",
 	"00000000",
 };
-
+float player_Answers = 0;
 internal void testQuestion(Input* input, int questionIndex, float dt) {
 	pressEnterQuestion(dt);
 	pressQuicklyAnimation(dt);
@@ -605,30 +612,26 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			}
 
 			if (strcmp(playerChoice, correctAnswer) == 0) {
+				player_Answers++;
+				random2 = getRandomNumber(100);
 				// Player answered correctly
-				answer1.isCorrect = true;
+				answer1.isCorrect = 1;
 				answer1.question = true;
 				//question = true;f
 			}
 			else {
-
+				player_Answers++;
+				random2 = getRandomNumber(100);
 				// Player answered incorrectly
-				answer1.isCorrect = false;
+				answer1.isCorrect = 2;
 				answer1.question = true;
 			}
 		}
 	}
 }
 
-std::map<int, Question> getQuestionSet(int iteration) {
-	if (iteration % 2 == 0) {
-		return questionAlgo1; // For even iterations, return first set of questions
-	}
-	else {
-		return questionAlgo2; // For odd iterations, return second set of questions
-	}
-}
-
+float player_1_Answers = 0;
+float player_2_Answers = 0;
 internal void testQuestionMultiplayer(Input* input, int questionIndex, int playerType, float dt) {
 	pressShiftQuestion(dt);
 	if (playerType == 1) {
@@ -637,7 +640,19 @@ internal void testQuestionMultiplayer(Input* input, int questionIndex, int playe
 	else {
 		pressP2QuicklyAnimation(dt);
 	}
-	std::map<int, Question> questions = getQuestionSet(playerType);
+	std::map<int, Question> questions;
+	if (questionType == 1) {
+		questions = questionAlgo;
+	}
+	else if (questionType == 2) {
+		questions = questionJava;
+	}
+	else if (questionType == 3) {
+		questions = questionBITS;
+	}
+	else {
+		questions = questionML;
+	}
 	// Seed the random number generator with the current time
 	auto it = questions.find(questionIndex);
 
@@ -757,24 +772,35 @@ internal void testQuestionMultiplayer(Input* input, int questionIndex, int playe
 			}
 
 			if (strcmp(playerChoice, correctAnswer) == 0 && playerType == 1) {
+				random3 = getRandomNumber(3);
+				random2 = getRandomNumber(100);
 				// Player answered correctly
-				player1.isCorrect = true;
 				player1.question = true;
+				player_1_Answers++;
+				player1.isCorrect = 1;
 				//question = true;f
 			}
 			else if (!(strcmp(playerChoice, correctAnswer) == 0) && playerType == 1) {
-
-				// Player answered incorrectly
-				player1.isCorrect = false;
+				random3 = getRandomNumber(3);
+				random2 = getRandomNumber(100);
 				player1.question = true;
+				player_1_Answers++;
+				// Player answered incorrectly
+				player1.isCorrect = 2;
 			}
 			else if (strcmp(playerChoice, correctAnswer) == 0 && playerType == 2) {
-				player2.isCorrect = true;
+				random3 = getRandomNumber(3);
+				random2 = getRandomNumber(100);
 				player2.question = true;
+				player_2_Answers++;
+				player2.isCorrect = 1;
 			}
 			else if (!(strcmp(playerChoice, correctAnswer) == 0) && playerType == 2) {
-				player2.isCorrect = false;
+				random3 = getRandomNumber(3);
+				random2 = getRandomNumber(100);
 				player2.question = true;
+				player_2_Answers++;
+				player2.isCorrect = 2;
 			}
 		}
 	}
@@ -807,8 +833,16 @@ internal void gameplay(Input* input, float dt) {
 		current_gamemode = GM_PAUSESP;
 	}
 	bool slowMo = false;
+	if (player_Answers > 5) {
+		player_Answers = 0;
+	}
+	answer1.question = true;
+	if (player_Answers == 5) {
+		slowMo = true;
+		answer1.question = false;
+	}
 	float player_1_ddp = 0.f;
-	if (player_1_score >= 6) {
+	if (player_1_score >= 10) {
 		tracking_speed_factor = 250;
 		overall_speed = 1700;
 	}
@@ -821,15 +855,15 @@ internal void gameplay(Input* input, float dt) {
 	if (player_1_ddp < -overall_speed) player_1_ddp = -overall_speed;
 	float player_3_ddp = 0;
 	float player_2_ddp = 0.f;
-	if (answer1.isCorrect == true && random2 == 0) {
-		if (is_down(BUTTON_W)) player_2_ddp += 5000;
-		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
-		slideColor = 0xb10000;
-	}
-	else if (slowMo) {
+	if (slowMo) {
 		player_2_p = 0;
 		if (is_down(BUTTON_W)) player_2_ddp += 0;
 		if (is_down(BUTTON_S)) player_2_ddp -= 0;
+	}
+	if (answer1.isCorrect == 1 && random2 >= 50) {
+		if (is_down(BUTTON_W)) player_2_ddp += 5000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		slideColor = 0xb10000;
 	}
 	else {
 		if (is_down(BUTTON_W)) player_2_ddp += 2000;
@@ -838,27 +872,25 @@ internal void gameplay(Input* input, float dt) {
 
 	simulate_player(&player_1_p, &player_1_dp, player_1_ddp, dt);
 	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
-	if (answer1.isCorrect == true && random2 == 1) {
+	if (slowMo == true) {
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
+	}
+	else if (answer1.isCorrect == 1 && random2 < 50) {
 		player_2_half_size_y = 16;
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x964B00);
 	}
-	else if (answer1.isCorrect == false && answer1.question == true && random2 == 1) {
+	else if (answer1.isCorrect == 2 && random2 >= 50) {
 		player_2_half_size_y = 10;
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xADD8E6);
-	}
-	else if (player_1_score == 5 && answer1.question == false) {
-		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
-		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
 	}
 	else {
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xCCCDFF);
 	}
-	if (player_1_score == 5 && answer1.question == false) {
-		countLong = 1;
-		slowMo = true;
+	if (player_Answers == 5) {
 		testQuestion(input, random, dt);
 		draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x383841, 0x383841, 0x383841);
 	}
@@ -877,6 +909,7 @@ internal void gameplay(Input* input, float dt) {
 			answer1.question = true;
 			slowMo = false;
 			player_2_score++;
+			player_Answers++;
 		}
 	}
 	else {
@@ -926,6 +959,7 @@ internal void gameplay(Input* input, float dt) {
 			ball_p_y = 0;
 			player_1_score++;
 			ballColor = 0xFF49B3;
+			player_Answers++;
 		}
 		if (ball_p_x - ball_half_size < -arena_half_size_x) {
 			ball_dp_x *= -1;
@@ -934,7 +968,6 @@ internal void gameplay(Input* input, float dt) {
 			ball_p_y = 0;
 			player_2_score++;
 			ballColor = 0xFF49B3;
-
 		}
 
 	}
@@ -956,7 +989,7 @@ internal void gameplay(Input* input, float dt) {
 	draw_number(player_2_score, 10, 40, 1.f, 0xbbffbb);
 	// Inside your gameplay function
 	// Detect collision with player 3 on all sides
-	if (answer1.question == true && answer1.isCorrect == false && random2 == 0) {
+	if (answer1.question == true && answer1.isCorrect == 2 && random2 < 50) {
 		static bool movingUp = true;
 		const float movementSpeed = 20.0f; // Adjust the speed of movement
 		const float maxUpPosition = 20.0f; // Adjust the maximum up position
@@ -999,16 +1032,34 @@ internal void gameplay(Input* input, float dt) {
 float elapsedTime6 = 0.0;
 float intervalAppear2 = 3.0;
 internal void multiplayer(Input* input, float dt) {
+	bool slowMo1 = false;
+	bool slowMo2 = false;
+	float player_1_half_size_x = 2.5, player_1_half_size_y = 12;
+	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	if (pressed(BUTTON_ESCAPE)) {
 		current_gamemode = GM_PAUSEMP;
 	}
-	bool slowMo1 = false;
-	bool slowMo2 = false;
+	player1.question = true;
+	player2.question = true;
+	if (player_1_Answers > 5) {
+		player_1_Answers = 0;
+	}
+	if (player_2_Answers > 5) {
+		player_2_Answers = 0;
+	}
+	if (player_1_Answers == 5) {
+		slowMo1 = true;
+		player1.question = false;
+	}
+	else if (player_2_Answers == 5) {
+		slowMo2 = true;
+		player2.question = false;
+	}
 	float player_1_ddp = 0.f;
-	elapsedTime4 += dt;
-	if (elapsedTime4 <= intervalAppear2) {
+	elapsedTime6 += dt;
+	if (elapsedTime6 <= intervalAppear2) {
 		draw_text("PRESS [ESC] TO OPEN MENU", -80, 35, 0.5, 0xFFFF00);
 		draw_text(">", -79.5, 30, 1, 0xFFFF00);
 		draw_text("W", -79, 20, 1, 0xFFFF00);
@@ -1023,13 +1074,13 @@ internal void multiplayer(Input* input, float dt) {
 		render_ascii_art(box, 9, 7, 71.5, -18, 1.6, 0xFFFF00, 0xFFFF00, 0xFFFF00);
 		draw_text("<", 74.5, -30, 1, 0xFFFF00);
 	}
-	if (player1.isCorrect == true) {
+	if (slowMo1 == true || slowMo2 == true) {
+		if (is_down(BUTTON_UP)) player_1_ddp += 0;
+		if (is_down(BUTTON_DOWN)) player_1_ddp -= 0;
+	}
+	else if (player1.isCorrect == 1 && random2 <= 50) {
 		if (is_down(BUTTON_UP)) player_1_ddp += 5000;
 		if (is_down(BUTTON_DOWN)) player_1_ddp -= 5000;
-	}
-	else if (slowMo2) {
-		if (is_down(BUTTON_UP)) player_1_ddp += 1000;
-		if (is_down(BUTTON_DOWN)) player_1_ddp -= 1000;
 	}
 	else {
 		if (is_down(BUTTON_UP)) player_1_ddp += 2000;
@@ -1037,13 +1088,13 @@ internal void multiplayer(Input* input, float dt) {
 	}
 	float player_3_ddp = 0;
 	float player_2_ddp = 0.f;
-	if (player2.isCorrect == true) {
+	if (slowMo1 == true || slowMo2 == true) {
+		if (is_down(BUTTON_W)) player_2_ddp += 0;
+		if (is_down(BUTTON_S)) player_2_ddp -= 0;
+	}
+	else if (player2.isCorrect == 1 && random2 <= 50) {
 		if (is_down(BUTTON_W)) player_2_ddp += 5000;
 		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
-	}
-	else if (slowMo1) {
-		if (is_down(BUTTON_W)) player_2_ddp += 1000;
-		if (is_down(BUTTON_S)) player_2_ddp -= 1000;
 	}
 	else {
 		if (is_down(BUTTON_W)) player_2_ddp += 2000;
@@ -1052,24 +1103,38 @@ internal void multiplayer(Input* input, float dt) {
 
 	simulate_player(&player_1_p, &player_1_dp, player_1_ddp, dt);
 	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
-	if (player_2_score == 5 && player1.question == false) {
+	if (player1.question == false || player2.question == false) {
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
-		draw_rect(-80, player_2_p, player_half_size_x, player_half_size_y, 0x000000);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
 	}
-	else if (player_1_score == 5 && player2.question == false) {
-		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
-		draw_rect(-80, player_2_p, player_half_size_x, player_half_size_y, 0x000000);
+	else if (player1.isCorrect == 1 && random2 > 50) {
+		player_2_half_size_y = 16;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+	}
+	else if (player1.isCorrect == 2 && random2 > 50) {
+		player_2_half_size_y = 8;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+	}
+	else if (player2.isCorrect == 1 && random2 > 50) {
+		player_1_half_size_y = 16;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+	}
+	else if (player2.isCorrect == 2 && random2 > 50) {
+		player_2_half_size_y = 8;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
 	}
 	else {
-		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x6666FF * 2);
-		draw_rect(-80, player_2_p, player_half_size_x, player_half_size_y, 0xD6178F);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0x6666FF * 2);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xD6178F);
 	}
-	if (player_2_score == 5 && player1.question == false) {
-		slowMo1 = true;
+	if (player1.question == false) {
 		testQuestionMultiplayer(input, random3, 1, dt);
 	}
-	else if (player_1_score == 5 && player2.question == false) {
-		slowMo2 = true;
+	else if (player2.question == false) {
 		testQuestionMultiplayer(input, random3, 2, dt);
 	}
 	if (slowMo2) {
@@ -1084,6 +1149,7 @@ internal void multiplayer(Input* input, float dt) {
 			player1.question = true;
 			slowMo1 = false;
 			player_1_score++;
+			player_2_Answers++;
 		}
 	}
 	else if (slowMo1) {
@@ -1098,6 +1164,7 @@ internal void multiplayer(Input* input, float dt) {
 			player2.question = true;
 			slowMo2 = false;
 			player_2_score++;
+			player_1_Answers++;
 		}
 	}
 	else {
@@ -1106,7 +1173,7 @@ internal void multiplayer(Input* input, float dt) {
 		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, ballColor);
 
 
-		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_half_size_x, player_half_size_y)
+		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, 80, player_1_p, player_1_half_size_x, player_1_half_size_y)
 			) {
 			ball_p_x = 80 - player_half_size_x - ball_half_size;
 			ball_dp_x *= -1;
@@ -1115,7 +1182,7 @@ internal void multiplayer(Input* input, float dt) {
 			ballColor = 0x00FFFF;
 		}
 
-		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_half_size_x, player_half_size_y)
+		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_2_half_size_x, player_2_half_size_y)
 			) {
 			ball_p_x = -80 + player_half_size_x + ball_half_size;
 			ball_dp_x *= -1;
@@ -1142,6 +1209,7 @@ internal void multiplayer(Input* input, float dt) {
 			ball_p_y = 0;
 			player_1_score++;
 			ballColor = 0xFF49B3;
+			player_2_Answers++;
 		}
 		if (ball_p_x - ball_half_size < -arena_half_size_x) {
 			ball_dp_x *= -1;
@@ -1150,6 +1218,7 @@ internal void multiplayer(Input* input, float dt) {
 			ball_p_y = 0;
 			player_2_score++;
 			ballColor = 0xFF49B3;
+			player_1_Answers++;
 		}
 
 	}
@@ -1171,7 +1240,7 @@ internal void multiplayer(Input* input, float dt) {
 	draw_number(player_2_score, 10, 40, 1.f, 0xbbffbb);
 	// Inside your gameplay function
 	// Detect collision with player 3 on all sides
-	if (player1.question == true && player1.isCorrect == false) {
+	if (player1.question == true && player2.question == true && player1.isCorrect == 2 && random2 <= 50) {
 		static bool movingUp = true;
 		const float movementSpeed = 20.0f; // Adjust the speed of movement
 		const float maxUpPosition = 20.0f; // Adjust the maximum up position
@@ -1209,7 +1278,7 @@ internal void multiplayer(Input* input, float dt) {
 
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0xff0000);
 	}
-	if (player2.question == true && player2.isCorrect == false) {
+	if (player1.question == true && player2.question == true && player2.isCorrect == 2 && random2 <= 50) {
 		static bool movingUp2 = true;
 		const float movementSpeed = 20.0f; // Adjust the speed of movement
 		const float maxUpPosition = 20.0f; // Adjust the maximum up position
@@ -2033,7 +2102,7 @@ internal void pickName(Input* input, float dt, int player_score) {
 				scoreMap[numberPlayers] = playerScore(text3, player_score);
 				numberPlayers++;
 			}
-			else {
+			else if(!found) {
 				notSave = true;
 			}
 			// Store in the map
@@ -2169,6 +2238,10 @@ internal void highScore(Input* input, float dt) {
 		draw_number(timer, 0, 35, 0.8, 0xbbffbb);
 	}
 	bool slowMo = false;
+	if (timer <= 1) {
+		slowMo = true;
+		answer.question = false;
+	}
 	elapsedTime8 += dt;
 	if (elapsedTime8 <= intervalAppear) {
 		draw_text("PRESS [ESC] TO OPEN MENU", -80, -40, 0.5, 0xFFFF00);
@@ -2204,7 +2277,11 @@ internal void highScore(Input* input, float dt) {
 
 	simulate_player(&player_1_p, &player_1_dp, player_1_ddp, dt);
 	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
-	if (answer.isCorrect == 1 && random2 >= 50) {
+	if (timer <= 1 && answer.question == false) {
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
+		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
+	}
+	else if (answer.isCorrect == 1 && random2 >= 50) {
 		player_2_half_size_y = 16;
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xff0000);
@@ -2214,16 +2291,11 @@ internal void highScore(Input* input, float dt) {
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xff0000);
 	}
-	else if (timer <= 1) {
-		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
-		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
-	}
 	else {
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xff0000);
 	}
 	if (timer <= 1) {
-		slowMo = true;
 		testQuestionExtraGameplay(input, random, dt);
 		draw_arena_borders_special(arena_half_size_x, arena_half_size_y, 0x383841, 0x383841, 0x383841);
 	}
@@ -2391,16 +2463,17 @@ internal void pauseScreen(Input* input, float dt, int gamemode) {
 			playMusic = true;
 			playMusic2 = false;
 			playMusic5 = false;
+			playMusic1 = false;
 			answer.isCorrect = 0;
 			answer.question = false;
 			timer = 11;
-			player1.isCorrect = false;
+			player1.isCorrect = 0;
 			player1.question = false;
-			player2.isCorrect = false;
+			player2.isCorrect = 0;
 			player2.question = false;
-			answer1.isCorrect = false;
+			answer1.isCorrect = 0;
 			answer1.question = false;
-			answer2.isCorrect = false;
+			answer2.isCorrect = 0;
 			answer2.question = false;
 			elapsedTime8 = 0.0;
 			ball_dp_x *= -1;
@@ -2451,7 +2524,7 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("high score", -80, -20, 0.7f, 0x888888);
 			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
-				random2 = getRandomNumber(2);
+				random = getRandomNumber(4);
 				current_gamemode = GM_JEOPARDY;
 				enemy_is_ai = hot_button ? 0 : 1;
 			}
@@ -2464,8 +2537,8 @@ internal void userUI(Input* input, float dt) {
 			if (pressed(BUTTON_ENTER)) {
 				playMusic = false;
 				playMusic2 = true;
-				random3 = rand() % 2;
-				current_gamemode = GM_MULTIPLAYER;
+				random3 = getRandomNumber(4);
+				current_gamemode = GM_JEOPARDY_MP;
 			}
 		}
 	}
@@ -2531,9 +2604,9 @@ internal void winPlayer(Input* input, float dt) {
 		current_gamemode = GM_UI;
 		player_1_score = 0;
 		player_2_score = 0;
-		player1.isCorrect = false;
+		player1.isCorrect = 0;
 		player1.question = false;
-		player2.isCorrect = false;
+		player2.isCorrect = 0;
 		player2.question = false;
 		playMusic3 = false;
 	}
@@ -2560,9 +2633,9 @@ internal void winScreen(Input* input, float dt) {
 		current_gamemode = GM_UI;
 		player_1_score = 0;
 		player_2_score = 0;
-		answer1.isCorrect = false;
+		answer1.isCorrect = 0;
 		answer1.question = false;
-		answer2.isCorrect = false;
+		answer2.isCorrect = 0;
 		answer2.question = false;
 		bluePowerup = false;
 		redPowerup = false;
@@ -2592,9 +2665,9 @@ internal void loseScreen(Input* input, float dt) {
 		current_gamemode = GM_UI;
 		player_1_score = 0;
 		player_2_score = 0;
-		answer1.isCorrect = false;
+		answer1.isCorrect = 0;
 		answer1.question = false;
-		answer2.isCorrect = false;
+		answer2.isCorrect = 0;
 		answer2.question = false;
 		bluePowerup = false;
 		redPowerup = false;
@@ -2610,14 +2683,18 @@ internal void simulate_game(Input* input, float dt) {
 
 	if (current_gamemode == GM_GAMEPLAY) {
 		gameplay(input, dt);
-		if (player_1_score >= 5) {
+		if (player_1_score >= 10) {
 			playMusic1 = false;
 			playMusic5 = true;
 		}
-		if (player_1_score >= 10) {
+		else {
+			playMusic1 = true;
+			playMusic = false;
+		}
+		if (player_1_score >= 20) {
 			current_gamemode = GM_WINSCREEN;
 		}
-		else if (player_2_score >= 10) {
+		else if (player_2_score >= 20) {
 			current_gamemode = GM_LOSESCREEN;
 		}
 	}
@@ -2635,9 +2712,13 @@ internal void simulate_game(Input* input, float dt) {
 	}
 	else if (current_gamemode == GM_MULTIPLAYER) {
 		multiplayer(input, dt);
-		if (player_1_score >= 10 || player_2_score >= 10) {
+		if (player_1_score >= 20 || player_2_score >= 20) {
 			current_gamemode = GM_WINPLAYER;
 		}
+	}
+	else if (current_gamemode == GM_JEOPARDY_MP) {
+		jeopardy(input, dt,2);
+
 	}
 	else if (current_gamemode == GM_WINPLAYER) {
 		playMusic2 = false;
@@ -2657,7 +2738,7 @@ internal void simulate_game(Input* input, float dt) {
 		loseScreen(input, dt);
 	}
 	else if (current_gamemode == GM_JEOPARDY) {
-		jeopardy(input, dt);
+		jeopardy(input,dt,1);
 	}
 	else if (current_gamemode == GM_PAUSESP) {
 		pauseScreen(input, dt, 1);
