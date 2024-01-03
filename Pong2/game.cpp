@@ -2605,6 +2605,8 @@ internal void winPlayer(Input* input, float dt) {
 		player_1_score = 0;
 		player_2_score = 0;
 		player1.isCorrect = 0;
+		player_1_Answers = 0;
+		player_2_Answers = 0;
 		player1.question = false;
 		player2.isCorrect = 0;
 		player2.question = false;
@@ -2636,6 +2638,7 @@ internal void winScreen(Input* input, float dt) {
 		answer1.isCorrect = 0;
 		answer1.question = false;
 		answer2.isCorrect = 0;
+		player_Answers = 0;
 		answer2.question = false;
 		bluePowerup = false;
 		redPowerup = false;
@@ -2667,6 +2670,7 @@ internal void loseScreen(Input* input, float dt) {
 		player_2_score = 0;
 		answer1.isCorrect = 0;
 		answer1.question = false;
+		player_Answers = 0;
 		answer2.isCorrect = 0;
 		answer2.question = false;
 		bluePowerup = false;
