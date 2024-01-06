@@ -23,13 +23,13 @@ global_variable Render_background render_background;
 
 WNDPROC Wndproc;
 internal void PlayMusic() {
-	PlaySound(TEXT("MainMenuMusic.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+	PlaySound(TEXT("MenuCyberpunk.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
 internal void PlayMusic2() {
 	PlaySound(TEXT("FirstPhase.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
 internal void PlayMusic3() {
-	PlaySound(TEXT("MultiplayerMusic.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+	PlaySound(TEXT("NewMeAndNewYou.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }internal void PlayMusic4() {
 	PlaySound(TEXT("Victory.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 }
@@ -193,16 +193,11 @@ input.buttons[b].is_down = is_down;\
 		//pickName(&input, delta_time,0);
 		//deleteProgress(&input, delta_time);
 		//leaderboards(&input, delta_time);
+		//tutorialSingle(&input, delta_time);
 		simulate_game(&input, delta_time);
 		if (quit) {
-			playMusic = false;
-			playMusic2 = false;
-			playMusic3 = false;
-			playMusic4 = false;
-			playMusic5 = false;
-			playMusic1 = false;
+			running = false;
 			break;
-
 		}
 		if (playMusic && !musicThread.joinable()) {
 			musicThread = std::thread(PlayMusic);

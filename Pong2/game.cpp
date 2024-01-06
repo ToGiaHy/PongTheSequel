@@ -21,13 +21,15 @@ static bool playMusic3 = false;
 static bool playMusic4 = false;
 static bool playMusic5 = false;
 static bool playMusic6 = false;
+
+
 static bool quit = false;
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
 
 //float player_pos_x = 0.f;
-float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp;
+float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_4_p = 0, player_4_dp;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
 float ball_p_x = 0, ball_p_y = 0, ball_dp_x = 130, ball_dp_y, ball_half_size = 2;
@@ -95,13 +97,17 @@ enum Gamemode {
 	GM_LEADERBOARDS,
 	GM_NAME,
 	GM_DELETE,
-	GM_PAUSEHS
-
+	GM_PAUSEHS,
+	GM_TUTORIAL_SINGLE,
+	GM_TUTORIAL_SINGLE_MENU,
+	GM_TUTORIAL_MULTIPLAYER_MENU,
+	GM_TUTORIAL_MULTIPLAYER,
+	GM_QUIT
 };
 
 Gamemode current_gamemode;
 int hot_button;
-int up_down;
+int up_down = 0;
 bool enemy_is_ai;
 bool notTutorial;
 int display;
@@ -413,6 +419,77 @@ internal void WASD(float dt) {
 	}
 }
 
+float flashingTutorial = 0.3f; // Change to color2 every 0.3 seconds
+float flashingTutorial1 = 0.8f; // Change to color1 every 0.8 seco
+float flashingTutorialTime = 0.0f; // Track time elapsed
+bool useColorTutorial = true; // Flag to toggle between colors
+internal void pressEscapeTutorialAnimation(float dt) {
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFF0000; // Bright yellow
+	u32 color2 = 0xB30000; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	flashingTutorialTime += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColorTutorial) {
+		if (flashingTutorialTime >= flashingTutorial) {
+			useColorTutorial = false;
+			flashingTutorialTime = 0.0f;
+		}
+	}
+	else {
+		if (flashingTutorialTime >= flashingTutorial1) {
+			useColorTutorial = true;
+			flashingTutorialTime = 0.0f;
+		}
+	}
+
+	if (useColorTutorial) {
+		draw_text("PRESS [ESC] TO END TUTORIAL", -80, 35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [ESC] TO END TUTORIAL", -80, 35, 0.4, color2);
+	}
+}
+
+int gameplayTime = 0;
+int multiplayerTime = 0;
+
+internal void tutorialSingleMenu(Input* input, float dt, int gamemode) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	draw_text("THIS IS YOUR FIRST TIME PLAYING", -55, 35, 0.6, 0xFFFF00);
+	draw_text("DO YOU REQUIRE A TUTORIAL?", -42.5, 28, 0.6, 0xFFFF00);
+	if (pressed(BUTTON_A)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_D)) {
+		up_down = 1;
+	}
+	if (up_down == 0) {
+		draw_text("YES", -50, -10, 1, 0x48FFFF);
+		draw_text("NO", 42, -10, 1, 0x888888);
+		draw_text("GO TO TUTORIAL", -60, -25, 0.5, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_TUTORIAL_SINGLE;
+		}
+	}
+	else {
+		draw_text("YES", -50, -10, 1, 0x888888);
+		draw_text("NO", 42, -10, 1, 0x48FFFF);
+		draw_text("GO TO CATEGORY", 28, -25, 0.5, 0x48FFFF);
+		if (pressed(BUTTON_ENTER) && gamemode == 1) {
+			random = getRandomNumber(4);
+			current_gamemode = GM_JEOPARDY;
+		}
+		else if (pressed(BUTTON_ENTER) && gamemode == 2) {
+			random3 = getRandomNumber(4);
+			current_gamemode = GM_JEOPARDY_MP;
+		}
+	}
+}
 
 
 internal void jeopardy(Input* input, float dt, int gamemode) {
@@ -443,11 +520,13 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 1;
+				gameplayTime++;
 			}
 			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
 				random3 = getRandomNumber(4);
 				current_gamemode = GM_MULTIPLAYER;
 				questionType = 1;
+				gameplayTime++;
 			}
 		}
 		else {
@@ -461,11 +540,13 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
+				gameplayTime++;
 			}
 			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
 				random3 = getRandomNumber(4);
 				current_gamemode = GM_MULTIPLAYER;
 				questionType = 2;
+				gameplayTime++;
 			}
 		}
 	}
@@ -481,11 +562,13 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
+				gameplayTime++;
 			}
 			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
 				random3 = getRandomNumber(4);
 				current_gamemode = GM_MULTIPLAYER;
 				questionType = 3;
+				gameplayTime++;
 			}
 		}
 		else {
@@ -499,11 +582,13 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
+				gameplayTime++;
 			}
 			else if (pressed(BUTTON_ENTER) && gamemode == 2) {
 				random3 = getRandomNumber(4);
 				current_gamemode = GM_MULTIPLAYER;
 				questionType = 4;
+				gameplayTime++;
 			}
 		}
 	}
@@ -521,9 +606,50 @@ const char* box[] = {
 	"0      0",
 	"00000000",
 };
+
+const char* speedBoost[] = {
+	"000000000000",
+	"0          0",
+	"0   1  1   0",
+	"0    1  1  0",
+	"0   1  1   0",
+	"0          0",
+	"000000000000",
+};
+
+const char* tallerBoost[] = {
+  "000000000",
+  "0       0",
+  "0   1   0",
+  "0  111  0",
+  "0 11111 0",
+  "0   1   0",
+  "000000000",
+};
+
+const char* shorterDebuff[] = {
+  "000000000",
+  "0   1   0",
+  "0 11111 0",
+  "0  111  0",
+  "0   1   0",
+  "0       0",
+  "000000000",
+};
+
+const char* extraWallDebuff[] = {
+	"000000000000",
+	"0   1  1   0",
+	"0   1  1   0",
+	"0   1  1   0",
+	"0   1  1   0",
+	"0   1  1   0",
+	"000000000000",
+};
+
 float player_Answers = 0;
 internal void testQuestion(Input* input, int questionIndex, float dt) {
-	pressEnterQuestion(dt);
+	pressShiftQuestion(dt);
 	pressQuicklyAnimation(dt);
 	std::map<int, Question> questions;
 	if (questionType == 1) {
@@ -598,7 +724,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
 		}
 
-		if (pressed(BUTTON_ENTER)) {
+		if (pressed(BUTTON_SHIFT)) {
 			// Check if the player selected the correct answer
 			const char* playerChoice;
 			if (display == 1) {
@@ -613,6 +739,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 
 			if (strcmp(playerChoice, correctAnswer) == 0) {
 				player_Answers++;
+				random = getRandomNumber(4);
 				random2 = getRandomNumber(100);
 				// Player answered correctly
 				answer1.isCorrect = 1;
@@ -621,6 +748,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 			}
 			else {
 				player_Answers++;
+				random = getRandomNumber(4);
 				random2 = getRandomNumber(100);
 				// Player answered incorrectly
 				answer1.isCorrect = 2;
@@ -814,6 +942,215 @@ u32 upper;
 float tracking_speed_factor;
 float overall_speed;
 
+int player_Tutorial = 0;
+internal void testQuestionTutorial(Input* input, float dt) {
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	pressShiftQuestion(dt);
+	// Display the question
+	draw_text("THIS IS A DEFAULT QUESTION", -80, 20, 0.6, 0xFFFF00);
+	draw_text("IN THE REAL GAME A SLOW MOVING BALL WILL ATTACK YOUR GOAL", -85, 35, 0.5, 0xFFFF00);
+	draw_text("YOU WILL HAVE TO CHOOSE YOUR ANSWER QUICKLY", -85, 28, 0.5, 0xFFFF00);
+	if (pressed(BUTTON_A)) {
+		display = 1;
+	}
+
+	if (pressed(BUTTON_D)) {
+		display = 2;
+	}
+
+	if (pressed(BUTTON_S)) {
+		display = 3;
+	}
+	if (display == 1) {
+		draw_text("A", -46, 8.8, 0.5, 0x48FFFF);
+		draw_text("RIGHT ANSWER", -58, 0, 0.45, 0x48FFFF);
+		render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+		draw_text("D", 40.6, 8.8, 0.5, 0x888888);
+		draw_text("WRONG ANSWER", 30, 0, 0.45, 0x888888);
+		render_ascii_art(box, 29, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("S", -3, -14, 0.5, 0x888888);
+		draw_text("WRONG ANSWER", -12, -23.5, 0.45, 0x888888);
+		render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+	}
+	else if (display == 2) {
+		draw_text("A", -46, 8.8, 0.5, 0x888888);
+		draw_text("RIGHT ANSWER", -58, 0, 0.45, 0x888888);
+		render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("D", 40.6, 8.8, 0.5, 0x48FFFF);
+		draw_text("WRONG ANSWER", 30, 0, 0.45, 0x48FFFF);
+		render_ascii_art(box, 29, 7, 38, 10, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+		draw_text("S", -3, -14, 0.5, 0x888888);
+		draw_text("WRONG ANSWER", -12, -23.5, 0.45, 0x888888);
+		render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
+	}
+	else {
+		draw_text("A", -46, 8.8, 0.5, 0x888888);
+		draw_text("RIGHT ANSWER", -58, 0, 0.45, 0x888888);
+		render_ascii_art(box, 9, 7, -48.7, 10, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("D", 40.6, 8.8, 0.5, 0x888888);
+		draw_text("WRONG ANSWER", 30, 0, 0.45, 0x888888);
+		render_ascii_art(box, 9, 7, 38, 10, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("S", -3, -14, 0.5, 0x48FFFF);
+		draw_text("WRONG ANSWER", -12, -23.5, 0.45, 0x48FFFF);
+		render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
+	}
+
+	if (pressed(BUTTON_SHIFT)) {
+		// Check if the player selected the correct answer
+		bool playerChoice;
+		if (display == 1) {
+			playerChoice = true;
+		}
+		else if (display == 2) {
+			playerChoice = false;
+		}
+		else {
+			playerChoice = false;
+		}
+
+		if (playerChoice == true) {
+			player_Answers++;
+			// Player answered correctly
+			answer2.isCorrect = 1;
+			answer2.question = true;
+			player_Tutorial = 0;
+			//question = true;f
+		}
+		else {
+			player_Answers++;
+			// Player answered incorrectly
+			answer2.isCorrect = 2;
+			answer2.question = true;
+			player_Tutorial = 0;
+		}
+	}
+}
+
+float tutorialTime = 0.0f;
+int movementTime = 10.0f;
+int ballTime = 20.0f;
+int player_Tutorial_Score = 0;
+
+internal void tutorialSingle(Input* input, float dt) {
+	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	pressEscapeTutorialAnimation(dt);
+	if (pressed(BUTTON_ESCAPE)) {
+		gameplayTime++;
+		random = getRandomNumber(4);
+		current_gamemode = GM_UI;
+		playMusic1 = false;
+	}
+	float player_2_ddp = 0.0f;
+	if (answer2.isCorrect == 1) {
+		if (is_down(BUTTON_W)) player_2_ddp += 5000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		draw_text("YOU PICKED THE CORRECT ANSWER", -80, 20, 0.6, 0xFFFF00);
+		draw_text("YOU GOT A POWERUP", -80, 0, 0.6, 0xFFFF00);
+		draw_text("YOU NOW MOVE FASTER", -80, -20, 0.6, 0xFFFF00);
+		slideColor = 0xb10000;
+	}
+	else {
+		if (is_down(BUTTON_W)) player_2_ddp += 2000;
+		if (is_down(BUTTON_S)) player_2_ddp -= 2000;
+	}
+	simulate_player(&player_2_p, &player_2_dp, player_2_ddp, dt);
+	if (answer2.isCorrect == 2) {
+		player_2_half_size_y = 10;
+		draw_text("YOU PICKED THE WRONG ANSWER", -80, 20, 0.6, 0xFFFF00);
+		draw_text("YOU GOT A POWERDOWN", -80, 0, 0.6, 0xFFFF00);
+		draw_text("YOU ARE SMOL NOW", -80, -20, 0.6, 0xFFFF00);
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x964B00);
+	}
+	else {
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x964B00);
+	}
+	tutorialTime += dt;
+	if (tutorialTime <= movementTime) {
+		draw_text(">", -79.5, 30, 1, 0xFFFF00);
+		draw_text("W", -79, 20, 1, 0xFFFF00);
+		render_ascii_art(box, 9, 7, -82.5, 22, 1.6, 0xFFFF00, 0xFFFF00, 0xFFFF00);
+		draw_text("S", -79, -20, 1, 0xFFFF00);
+		render_ascii_art(box, 9, 7, -82.5, -18, 1.6, 0xFFFF00, 0xFFFF00, 0xFFFF00);
+		draw_text("<", -79.5, -30, 1, 0xFFFF00);
+		draw_text("USE W AND S TO MOVE AROUND", -40, 0, 0.6, 0xFFFF00);
+	}
+	else {
+		ball_p_x += ball_dp_x * dt;
+		ball_p_y += ball_dp_y * dt;
+		draw_rect(ball_p_x, ball_p_y, ball_half_size, ball_half_size, ballColor);
+
+		if (aabb_vs_aabb(ball_p_x, ball_p_y, ball_half_size, ball_half_size, -80, player_2_p, player_2_half_size_x, player_2_half_size_y)
+			) {
+			ball_p_x = -80 + player_half_size_x + ball_half_size;
+			ball_dp_x *= -1;
+			ball_dp_y = (ball_p_y - player_2_p) * 2 + player_2_dp * .75f;
+			ballColor = 0xFF6347;
+		}
+
+
+		if (ball_p_y + ball_half_size > arena_half_size_y) {
+			ball_p_y = arena_half_size_y - ball_half_size;
+			ball_dp_y *= -1;
+			ballColor = 0xFFFF00;
+			upper = 0x008000;
+		}
+		else if (ball_p_y - ball_half_size < -arena_half_size_y) {
+			ball_p_y = -arena_half_size_y + ball_half_size;
+			ball_dp_y *= -1;
+			ballColor = 0xFFFF00;
+			lower = 0x008000;
+		}
+		else {
+			lower = 0x464651;
+			upper = 0x464651;
+		}
+		if (tutorialTime <= ballTime) {
+			draw_text("HIT THE BALL TO MAKE IT MOVE", -80, 20, 0.6, 0xFFFF00);
+			draw_text("AND SCORE INTO THE OPPONENT GOAL", -80, 0, 0.6, 0xFFFF00);
+
+			if (ball_p_x + ball_half_size > arena_half_size_x) {
+				ball_dp_x *= -1;
+				ball_dp_y = 0;
+				ball_p_x = 0;
+				ball_p_y = 0;
+				ballColor = 0xFF49B3;
+			}
+		}
+		else {
+			if (ball_p_x + ball_half_size > arena_half_size_x) {
+				ball_dp_x *= -1;
+				ball_dp_y = 0;
+				ball_p_x = 0;
+				ball_p_y = 0;
+				player_Tutorial_Score++;
+				ballColor = 0xFF49B3;
+				player_Tutorial++;
+			}
+		}
+		if (ball_p_x - ball_half_size < -arena_half_size_x) {
+			ball_dp_x *= -1;
+			ball_dp_y = 0;
+			ball_p_x = 0;
+			ball_p_y = 0;
+			ballColor = 0xFF49B3;
+		}
+		if (tutorialTime > ballTime) {
+			draw_number(player_Tutorial_Score, -10, 40, 1.f, 0xbbffbb);
+			if (player_Tutorial_Score < 5) {
+				draw_text("TRY TO SCORE FIVE POINTS TO GET A QUESTION", -80, 0, 0.6, 0xFFFF00);
+			}
+			if (player_Tutorial == 5) {
+				ball_p_x = 0;
+				ball_p_y = 0;
+				testQuestionTutorial(input, dt);
+			}
+		}
+	}
+}
+
 internal void gameplay(Input* input, float dt) {
 
 	float player_2_half_size_x = 2.5, player_2_half_size_y = 12;
@@ -863,6 +1200,8 @@ internal void gameplay(Input* input, float dt) {
 	if (answer1.isCorrect == 1 && random2 >= 50) {
 		if (is_down(BUTTON_W)) player_2_ddp += 5000;
 		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		render_ascii_art(speedBoost, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("FASTER BOOST", -65, -36.5, 0.5, 0x888888);
 		slideColor = 0xb10000;
 	}
 	else {
@@ -880,11 +1219,15 @@ internal void gameplay(Input* input, float dt) {
 		player_2_half_size_y = 16;
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x964B00);
+		render_ascii_art(tallerBoost, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("TALLER BOOST", -65, -36.5, 0.5, 0x888888);
 	}
 	else if (answer1.isCorrect == 2 && random2 >= 50) {
 		player_2_half_size_y = 10;
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xADD8E6);
+		render_ascii_art(shorterDebuff, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("SHORTER DEBUFF", -65, -36.5, 0.5, 0x888888);
 	}
 	else {
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xD6178F);
@@ -1026,6 +1369,8 @@ internal void gameplay(Input* input, float dt) {
 		}
 
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0x8D155E);
+		render_ascii_art(extraWallDebuff, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("EXTRA WALL", -65, -36.5, 0.5, 0x888888);
 	}
 }
 
@@ -1051,10 +1396,15 @@ internal void multiplayer(Input* input, float dt) {
 	}
 	if (player_1_Answers == 5) {
 		slowMo1 = true;
+		player1.isCorrect = 0;
+		player2.isCorrect = 0;
+
 		player1.question = false;
 	}
 	else if (player_2_Answers == 5) {
 		slowMo2 = true;
+		player1.isCorrect = 0;
+		player2.isCorrect = 0;
 		player2.question = false;
 	}
 	float player_1_ddp = 0.f;
@@ -1081,12 +1431,15 @@ internal void multiplayer(Input* input, float dt) {
 	else if (player1.isCorrect == 1 && random2 <= 50) {
 		if (is_down(BUTTON_UP)) player_1_ddp += 5000;
 		if (is_down(BUTTON_DOWN)) player_1_ddp -= 5000;
+		render_ascii_art(speedBoost, 9, 7, 70, -25, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("FASTER BOOST", 30, -26.5, 0.5, 0x888888);
 	}
 	else {
 		if (is_down(BUTTON_UP)) player_1_ddp += 2000;
 		if (is_down(BUTTON_DOWN)) player_1_ddp -= 2000;
 	}
 	float player_3_ddp = 0;
+	float player_4_ddp = 0;
 	float player_2_ddp = 0.f;
 	if (slowMo1 == true || slowMo2 == true) {
 		if (is_down(BUTTON_W)) player_2_ddp += 0;
@@ -1095,6 +1448,8 @@ internal void multiplayer(Input* input, float dt) {
 	else if (player2.isCorrect == 1 && random2 <= 50) {
 		if (is_down(BUTTON_W)) player_2_ddp += 5000;
 		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		render_ascii_art(speedBoost, 9, 7, -80, -25, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("FASTER BOOST", -65, -26.5, 0.5, 0x888888);
 	}
 	else {
 		if (is_down(BUTTON_W)) player_2_ddp += 2000;
@@ -1107,25 +1462,33 @@ internal void multiplayer(Input* input, float dt) {
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0x000000);
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0x000000);
 	}
-	else if (player1.isCorrect == 1 && random2 > 50) {
+	else if (player2.isCorrect == 1 && random2 > 50) {
 		player_2_half_size_y = 16;
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
-	}
-	else if (player1.isCorrect == 2 && random2 > 50) {
-		player_2_half_size_y = 8;
-		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
-		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
-	}
-	else if (player2.isCorrect == 1 && random2 > 50) {
-		player_1_half_size_y = 16;
-		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
-		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+		render_ascii_art(tallerBoost, 9, 7, -80, -15, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("TALLER BOOST", -65, -16.5, 0.5, 0x888888);
 	}
 	else if (player2.isCorrect == 2 && random2 > 50) {
 		player_2_half_size_y = 8;
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+		render_ascii_art(shorterDebuff, 9, 7, -80, -15, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("SHORTER DEBUFF", -65, -16.5, 0.5, 0x888888);
+	}
+	else if (player1.isCorrect == 1 && random2 > 50) {
+		player_1_half_size_y = 16;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+		render_ascii_art(tallerBoost, 9, 7, 70, -15, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("TALLER BOOST", 30, -16.5, 0.5, 0x888888);
+	}
+	else if (player1.isCorrect == 2 && random2 > 50) {
+		player_1_half_size_y = 8;
+		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
+		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0xff0000);
+		render_ascii_art(shorterDebuff, 9, 7, 70, -15, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("SHORTER DEBUFF", 25, -16.5, 0.5, 0x888888);
 	}
 	else {
 		draw_rect(80, player_1_p, player_1_half_size_x, player_1_half_size_y, 0x6666FF * 2);
@@ -1240,7 +1603,7 @@ internal void multiplayer(Input* input, float dt) {
 	draw_number(player_2_score, 10, 40, 1.f, 0xbbffbb);
 	// Inside your gameplay function
 	// Detect collision with player 3 on all sides
-	if (player1.question == true && player2.question == true && player1.isCorrect == 2 && random2 <= 50) {
+	if (player1.question == true && player2.question == true && player2.isCorrect == 2 && random2 <= 50) {
 		static bool movingUp = true;
 		const float movementSpeed = 20.0f; // Adjust the speed of movement
 		const float maxUpPosition = 20.0f; // Adjust the maximum up position
@@ -1277,31 +1640,33 @@ internal void multiplayer(Input* input, float dt) {
 		}
 
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0xff0000);
+		render_ascii_art(extraWallDebuff, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("EXTRA WALL", -65, -36.5, 0.5, 0x888888);
 	}
-	if (player1.question == true && player2.question == true && player2.isCorrect == 2 && random2 <= 50) {
+	if (player1.question == true && player2.question == true && player1.isCorrect == 2 && random2 <= 50) {
 		static bool movingUp2 = true;
 		const float movementSpeed = 20.0f; // Adjust the speed of movement
 		const float maxUpPosition = 20.0f; // Adjust the maximum up position
 		const float minDownPosition = -20.0f; // Adjust the minimum down position
 		if (movingUp2) {
-			player_3_p += movementSpeed * dt; // Move up
-			if (player_3_p >= maxUpPosition) {
-				player_3_p = maxUpPosition; // Limit at the maximum up position
+			player_4_p += movementSpeed * dt; // Move up
+			if (player_4_p >= maxUpPosition) {
+				player_4_p = maxUpPosition; // Limit at the maximum up position
 				movingUp2 = false; // Change direction
 			}
 		}
 		else {
-			player_3_p -= movementSpeed * dt; // Move down
-			if (player_3_p <= minDownPosition) {
-				player_3_p = minDownPosition; // Limit at the minimum down position
+			player_4_p -= movementSpeed * dt; // Move down
+			if (player_4_p <= minDownPosition) {
+				player_4_p = minDownPosition; // Limit at the minimum down position
 				movingUp2 = true; // Change direction
 			}
 		}
-		simulate_player(&player_3_p, &player_3_dp, player_3_ddp, dt);
+		simulate_player(&player_4_p, &player_4_dp, player_4_ddp, dt);
 		if ((ball_p_x + ball_half_size > -30 - player_half_size_x) &&
 			(ball_p_x - ball_half_size < -30 + player_half_size_x) &&
-			(ball_p_y + ball_half_size > player_3_p - 17) &&
-			(ball_p_y - ball_half_size < player_3_p + 17)) {
+			(ball_p_y + ball_half_size > player_4_p - 17) &&
+			(ball_p_y - ball_half_size < player_4_p + 17)) {
 			// Handle collision with player 3 here
 			if (ball_p_x < -30) {
 				ball_p_x = -30 - player_half_size_x - ball_half_size;
@@ -1310,16 +1675,18 @@ internal void multiplayer(Input* input, float dt) {
 				ball_p_x = -30 + player_half_size_x + ball_half_size;
 			}
 			ball_dp_x *= -1;
-			ball_dp_y = (ball_p_y - player_3_p) * 2 + player_3_dp * 0.75f;
+			ball_dp_y = (ball_p_y - player_3_p) * 2 + player_4_dp * 0.75f;
 			ballColor = 0x808080;
 		}
 
-		draw_rect(-30, player_3_p, player_half_size_x, 17, 0xff0000);
+		draw_rect(-30, player_4_p, player_half_size_x, 17, 0xff0000);
+		render_ascii_art(extraWallDebuff, 9, 7, 70, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("EXTRA WALL", 30, -36.5, 0.5, 0x888888);
 	}
 }
 
 internal void testQuestionExtraGameplay(Input* input, int questionIndex, float dt) {
-	pressEnterQuestion(dt);
+	pressShiftQuestion(dt);
 	pressQuicklyAnimation(dt);
 	std::map<int, Question> questions = questionHighScore;
 
@@ -1382,7 +1749,7 @@ internal void testQuestionExtraGameplay(Input* input, int questionIndex, float d
 			render_ascii_art(box, 9, 7, -5.8, -12.8, 1, 0x48FFFF, 0x48FFFF, 0x48FFFF);
 		}
 
-		if (pressed(BUTTON_ENTER)) {
+		if (pressed(BUTTON_SHIFT)) {
 			// Check if the player selected the correct answer
 			random2 = getRandomNumber(100);
 			const char* playerChoice;
@@ -2102,7 +2469,7 @@ internal void pickName(Input* input, float dt, int player_score) {
 				scoreMap[numberPlayers] = playerScore(text3, player_score);
 				numberPlayers++;
 			}
-			else if(!found) {
+			else if (!found) {
 				notSave = true;
 			}
 			// Store in the map
@@ -2264,6 +2631,8 @@ internal void highScore(Input* input, float dt) {
 	if (answer.isCorrect == 1 && random2 <= 50) {
 		if (is_down(BUTTON_W)) player_2_ddp += 5000;
 		if (is_down(BUTTON_S)) player_2_ddp -= 5000;
+		render_ascii_art(speedBoost, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("FASTER BOOST", -65, -36.5, 0.5, 0x888888);
 	}
 	else if (timer <= 1 && answer.question == false) {
 		if (is_down(BUTTON_W)) player_2_ddp += 0;
@@ -2285,11 +2654,15 @@ internal void highScore(Input* input, float dt) {
 		player_2_half_size_y = 16;
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xff0000);
+		render_ascii_art(tallerBoost, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("TALLER BOOST", -65, -36.5, 0.5, 0x888888);
 	}
 	else if (answer.isCorrect == 2 && random2 >= 50) {
 		player_2_half_size_y = 8;
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
 		draw_rect(80, player_1_p, player_half_size_x, player_half_size_y, 0xff0000);
+		render_ascii_art(shorterDebuff, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("SHORTER DEBUFF", -65, -36.5, 0.5, 0x888888);
 	}
 	else {
 		draw_rect(-80, player_2_p, player_2_half_size_x, player_2_half_size_y, 0xff0000);
@@ -2493,12 +2866,37 @@ float xOffset;
 float titleX = 0.0f;
 float titleY = 0.0f;
 
-
-
-internal void userUI(Input* input, float dt) {
-
+internal void quitScreen(Input* input, float dt) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	draw_text("QUIT?", -55, 35, 0.6, 0xFFFF00);
+	if (pressed(BUTTON_A)) {
+		up_down = 0;
+	}
+	if (pressed(BUTTON_D)) {
+		up_down = 1;
+	}
+	if (up_down == 0) {
+		draw_text("YES", -50, -10, 1, 0x48FFFF);
+		draw_text("NO", 42, -10, 1, 0x888888);
+		if (pressed(BUTTON_ENTER)) {
+			quit = true;
+		}
+	}
+	else {
+		draw_text("YES", -50, -10, 1, 0x888888);
+		draw_text("NO", 42, -10, 1, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			current_gamemode = GM_UI;
+		}
+	}
+}
+
+internal void userUI(Input* input, float dt) {
+	playMusic = true;
+	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
+	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
+	//render_ascii_art(extraWallDebuff, 9, 7, -5.8, -12.8, 1, 0x888888, 0x888888, 0x888888);
 	xOffset = sin(titleX) * 2.0f; // Adjust the magnitude of movement
 	yOffset = cos(titleY) * 2.0f; // Adjust the magnitude of movement
 	titleX += 0.01f; // Adjust the speed of movement
@@ -2511,43 +2909,56 @@ internal void userUI(Input* input, float dt) {
 		hot_button = !hot_button;
 	}
 	if (pressed(BUTTON_W)) {
-		up_down = 0;
+		up_down--;
 	}
 	if (pressed(BUTTON_S)) {
-		up_down = 1;
+		up_down++;
+	}
+	if (up_down < 0) {
+		up_down = 2;
+	}
+	if (up_down > 2) {
+		up_down = 0;
 	}
 
 	if (up_down == 0) {
 		if (hot_button == 0) {
-			draw_text("SINGLE PLAYER", -80, -10, 1, 0x48FFFF);
-			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("high score", -80, -20, 0.7f, 0x888888);
-			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
-			if (pressed(BUTTON_ENTER)) {
+			draw_text("SINGLE PLAYER", -80, 0, 1, 0x48FFFF);
+			draw_lowercase_letter("multiplayer", 30, 0, 0.7f, 0x888888);
+			draw_lowercase_letter("high score", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("tutorial", 30, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
+			if (pressed(BUTTON_ENTER) && gameplayTime != 0) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_JEOPARDY;
 				enemy_is_ai = hot_button ? 0 : 1;
 			}
+			else if (pressed(BUTTON_ENTER) && gameplayTime == 0) {
+				current_gamemode = GM_TUTORIAL_SINGLE_MENU;
+			}
 		}
 		else {
-			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
-			draw_text("MULTIPLAYER", 20, -10, 1, 0x48FFFF);
-			draw_lowercase_letter("high score", -80, -20, 0.7f, 0x888888);
-			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
-			if (pressed(BUTTON_ENTER)) {
-				playMusic = false;
-				playMusic2 = true;
+			draw_lowercase_letter("single player", -80, 0, 0.7f, 0x888888);
+			draw_text("MULTIPLAYER", 20, 0, 1, 0x48FFFF);
+			draw_lowercase_letter("high score", -80, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("tutorial", 30, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
+			if (pressed(BUTTON_ENTER) && gameplayTime != 0) {
 				random3 = getRandomNumber(4);
 				current_gamemode = GM_JEOPARDY_MP;
+			}
+			else if (pressed(BUTTON_ENTER) && gameplayTime == 0) {
+				current_gamemode = GM_TUTORIAL_MULTIPLAYER_MENU;
 			}
 		}
 	}
 	else if (up_down == 1) {
 		if (hot_button == 0) {
-			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
-			draw_text("HIGH SCORE", -80, -20, 1, 0x48FFFF);
-			draw_lowercase_letter("quit", 20, -20, 0.7f, 0x888888);
+			draw_lowercase_letter("single player", -80, 0, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 30, 0, 0.7f, 0x888888);
+			draw_text("HIGH SCORE", -80, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("tutorial", 30, -10, 0.7f, 0x888888);
+			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				playMusic = false;
 				playMusic6 = true;
@@ -2558,13 +2969,27 @@ internal void userUI(Input* input, float dt) {
 			}
 		}
 		else {
-			draw_lowercase_letter("single player", -80, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("multiplayer", 20, -10, 0.7f, 0x888888);
-			draw_lowercase_letter("high score", -80, -20, 0.7f, 0x888888);
-			draw_text("QUIT", 20, -20, 1, 0x48FFFF);
+			draw_lowercase_letter("single player", -80, 0, 0.7f, 0x888888);
+			draw_lowercase_letter("multiplayer", 30, 0, 0.7f, 0x888888);
+			draw_lowercase_letter("high score", -80, -10, 0.7f, 0x888888);
+			draw_text("TUTORIAL", 30, -10, 1, 0x48FFFF);
+			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
-				quit = true;
+				gameplayTime++;
+				current_gamemode = GM_TUTORIAL_SINGLE;
 			}
+		}
+	}
+	else if (up_down == 2) {
+		draw_lowercase_letter("single player", -80, 0, 0.7f, 0x888888);
+		draw_lowercase_letter("multiplayer", 30, 0, 0.7f, 0x888888);
+		draw_lowercase_letter("high score", -80, -10, 0.7f, 0x888888);
+		draw_lowercase_letter("tutorial", 30, -10, 0.7f, 0x888888);
+		draw_text("QUIT", -10, -20, 1, 0x48FFFF);
+		if (pressed(BUTTON_ENTER)) {
+			titleX = 0.0; // Adjust the speed of movement
+			titleY = 0.0; // Adjust the speed of movement
+			current_gamemode = GM_QUIT;
 		}
 	}
 }
@@ -2715,13 +3140,26 @@ internal void simulate_game(Input* input, float dt) {
 		}
 	}
 	else if (current_gamemode == GM_MULTIPLAYER) {
+		playMusic = false;
+		playMusic2 = true;
 		multiplayer(input, dt);
 		if (player_1_score >= 20 || player_2_score >= 20) {
 			current_gamemode = GM_WINPLAYER;
 		}
 	}
+	else if (current_gamemode == GM_TUTORIAL_SINGLE_MENU) {
+		tutorialSingleMenu(input, dt, 1);
+	}
+	else if (current_gamemode == GM_TUTORIAL_MULTIPLAYER_MENU) {
+		tutorialSingleMenu(input, dt, 2);
+	}
+	else if (current_gamemode == GM_TUTORIAL_SINGLE) {
+		playMusic = false;
+		playMusic1 = true;
+		tutorialSingle(input, dt);
+	}
 	else if (current_gamemode == GM_JEOPARDY_MP) {
-		jeopardy(input, dt,2);
+		jeopardy(input, dt, 2);
 
 	}
 	else if (current_gamemode == GM_WINPLAYER) {
@@ -2742,7 +3180,7 @@ internal void simulate_game(Input* input, float dt) {
 		loseScreen(input, dt);
 	}
 	else if (current_gamemode == GM_JEOPARDY) {
-		jeopardy(input,dt,1);
+		jeopardy(input, dt, 1);
 	}
 	else if (current_gamemode == GM_PAUSESP) {
 		pauseScreen(input, dt, 1);
@@ -2761,8 +3199,17 @@ internal void simulate_game(Input* input, float dt) {
 	else if (current_gamemode == GM_LEADERBOARDS) {
 		leaderboards(input, dt);
 	}
+	else if (current_gamemode == GM_QUIT) {
+		playMusic = false;
+		playMusic2 = false;
+		playMusic3 = false;
+		playMusic4 = false;
+		playMusic5 = false;
+		playMusic1 = false;
+		playMusic6 = false;
+		quitScreen(input, dt);
+	}
 	else {
-		playMusic = true;
 		userUI(input, dt);
 	}
 }
