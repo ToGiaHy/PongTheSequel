@@ -181,6 +181,39 @@ internal void pressEnterAnimation(float dt) {
 	}
 }
 
+internal void pressShiftAnimation(float dt) {
+
+	// Define the colors for the flashing effect
+	u32 color1 = 0xFFFF00; // Bright yellow
+	u32 color2 = 0xCC9900; // Darker yellow (adjust as needed)
+
+	// Inside your update/render loop or where time is tracked
+	// Increment elapsed time by delta time (dt)
+	elapsedTime += dt;
+
+	// Check if enough time has passed to change colors
+	if (useColor1) {
+		if (elapsedTime >= flashingIntervalColor1) {
+			useColor1 = false;
+			elapsedTime = 0.0f;
+		}
+	}
+	else {
+		if (elapsedTime >= flashingIntervalColor2) {
+			useColor1 = true;
+			elapsedTime = 0.0f;
+		}
+	}
+
+	if (useColor1) {
+		draw_text("PRESS [SHIFT] TO CHOOSE", 27, -35, 0.4, color1);
+	}
+	else {
+		draw_text("PRESS [SHIFT] TO CHOOSE", 27, -35, 0.4, color2);
+	}
+}
+
+
 float flashingIntervalColor13 = 0.3f; // Change to color2 every 0.3 seconds
 float flashingIntervalColor3 = 0.8f; // Change to color1 every 0.8 seco
 float elapsedTime1 = 0.0f; // Track time elapsed
@@ -649,6 +682,7 @@ const char* extraWallDebuff[] = {
 
 float player_Answers = 0;
 internal void testQuestion(Input* input, int questionIndex, float dt) {
+	pressShiftAnimation(dt);
 	pressShiftQuestion(dt);
 	pressQuicklyAnimation(dt);
 	std::map<int, Question> questions;
@@ -761,6 +795,7 @@ internal void testQuestion(Input* input, int questionIndex, float dt) {
 float player_1_Answers = 0;
 float player_2_Answers = 0;
 internal void testQuestionMultiplayer(Input* input, int questionIndex, int playerType, float dt) {
+	pressShiftAnimation(dt);
 	pressShiftQuestion(dt);
 	if (playerType == 1) {
 		pressP1QuicklyAnimation(dt);
@@ -944,6 +979,7 @@ float overall_speed;
 
 int player_Tutorial = 0;
 internal void testQuestionTutorial(Input* input, float dt) {
+	pressShiftAnimation(dt);
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
 	pressShiftQuestion(dt);
@@ -1686,6 +1722,7 @@ internal void multiplayer(Input* input, float dt) {
 }
 
 internal void testQuestionExtraGameplay(Input* input, int questionIndex, float dt) {
+	pressShiftAnimation(dt);
 	pressShiftQuestion(dt);
 	pressQuicklyAnimation(dt);
 	std::map<int, Question> questions = questionHighScore;
