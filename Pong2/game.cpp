@@ -1078,6 +1078,8 @@ internal void tutorialSingle(Input* input, float dt) {
 		random = getRandomNumber(4);
 		current_gamemode = GM_UI;
 		playMusic1 = false;
+
+
 	}
 	float player_2_ddp = 0.0f;
 	if (answer2.isCorrect == 1) {
@@ -2969,6 +2971,7 @@ internal void userUI(Input* input, float dt) {
 				random = getRandomNumber(4);
 				current_gamemode = GM_JEOPARDY;
 				enemy_is_ai = hot_button ? 0 : 1;
+				player_Answers = 0;
 			}
 			else if (pressed(BUTTON_ENTER) && gameplayTime == 0) {
 				current_gamemode = GM_TUTORIAL_SINGLE_MENU;
@@ -2982,6 +2985,8 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER) && gameplayTime != 0) {
 				random3 = getRandomNumber(4);
+				player_2_Answers = 0;
+				player_1_Answers = 0;
 				current_gamemode = GM_JEOPARDY_MP;
 			}
 			else if (pressed(BUTTON_ENTER) && gameplayTime == 0) {
