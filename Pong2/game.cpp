@@ -12,7 +12,7 @@
 #include <ctime>
 #include <algorithm> // Include for sorting
 #include <string>
-
+//music switches
 std::atomic<bool> loadingFinished(false);
 static bool playMusic = false;
 static bool playMusic1 = false;
@@ -22,13 +22,13 @@ static bool playMusic4 = false;
 static bool playMusic5 = false;
 static bool playMusic6 = false;
 
-
+//button input states
 static bool quit = false;
 #define is_down(b) input->buttons[b].is_down
 #define pressed(b) (input->buttons[b].is_down && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].is_down && input->buttons[b].changed)
 
-//float player_pos_x = 0.f;
+//game object properties
 float player_1_p, player_1_dp, player_2_p, player_2_dp, player_3_p = 0, player_3_dp, player_4_p = 0, player_4_dp;
 float arena_half_size_x = 85, arena_half_size_y = 45;
 float player_half_size_x = 2.5, player_half_size_y = 12;
@@ -37,6 +37,7 @@ float ball_p1_x = 0, ball_p1_y = 0, ball_dp1_x = 130, ball_dp1_y, ball_half1_siz
 float timer;
 int player_1_score, player_2_score, player_high_score;
 
+//player properties
 internal void
 simulate_player(float* p, float* dp, float ddp, float dt) {
 	ddp -= *dp * 10.f;
@@ -53,6 +54,7 @@ simulate_player(float* p, float* dp, float ddp, float dt) {
 	}
 }
 
+//random number generator
 int getRandomNumber(int range) {
 	// Generate a random number between 0 and RAND_MAX
 	int randomValue = std::rand();
@@ -69,6 +71,8 @@ int getRandomNumber(int range) {
 	return randomValue % range;
 }
 
+
+//collision detection function
 internal bool
 aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 	float p2x, float p2y, float hs2x, float hs2y) {
@@ -79,7 +83,7 @@ aabb_vs_aabb(float p1x, float p1y, float hs1x, float hs1y,
 }
 
 
-
+//gamemode for game
 enum Gamemode {
 	GM_MENU,
 	GM_GAMEPLAY,
@@ -126,7 +130,7 @@ int questionType;
 int loadingTime;
 bool pause;
 
-
+//Answer structure
 struct Answer {
 	bool question;   // Text representing the answer option
 	int isCorrect;     // Indicates whether the answer is correct or not
@@ -490,6 +494,7 @@ internal void pressEscapeTutorialAnimation(float dt) {
 int gameplayTime = 0;
 int multiplayerTime = 0;
 
+//Tutorial menu when the player has not played the game
 internal void tutorialSingleMenu(Input* input, float dt, int gamemode) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
@@ -524,7 +529,8 @@ internal void tutorialSingleMenu(Input* input, float dt, int gamemode) {
 	}
 }
 
-
+//Jeopardy question categories
+float elapsedTime7 = 0.0;
 internal void jeopardy(Input* input, float dt, int gamemode) {
 	draw_rect(0, 0, arena_half_size_x, arena_half_size_y, 0x000000);
 	draw_arena_borders(arena_half_size_x, arena_half_size_y, 0x464651);
@@ -550,6 +556,7 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 			draw_text("QUESTION RELATING TO THE ALGORITHM COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT COMPLEXITY OF DATA STRUCTURES.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER) && gamemode == 1) {
+				elapsedTime7 = 0;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 1;
@@ -570,6 +577,7 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 			draw_text("QUESTION RELATING TO THE JAVA LANGUAGE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE KNOWLEDGE OF JAVA.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER) && gamemode == 1) {
+				elapsedTime7 = 0;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 2;
@@ -592,6 +600,7 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 			draw_text("QUESTION RELATING TO THE BUILING IT SYSTEMS COURSE.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE SKILLS NEEDED FOR WORKING IN A GROUP.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER) && gamemode == 1) {
+				elapsedTime7 = 0;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 3;
@@ -612,6 +621,7 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 			draw_text("QUESTION RELATING TO MACHINE LEARNING.", -80, -10, 0.4, 0xFFFFFF);
 			draw_text("ASKS ABOUT THE MACHINE LEARNING CONCEPTS.", -80, -20, 0.4, 0xFFFFFF);
 			if (pressed(BUTTON_ENTER) && gamemode == 1) {
+				elapsedTime7 = 0;
 				random = getRandomNumber(4);
 				current_gamemode = GM_GAMEPLAY;
 				questionType = 4;
@@ -630,6 +640,7 @@ internal void jeopardy(Input* input, float dt, int gamemode) {
 	}
 }
 
+//Question hints
 const char* box[] = {
 	"00000000",
 	"0      0",
@@ -639,7 +650,9 @@ const char* box[] = {
 	"0      0",
 	"00000000",
 };
+//
 
+//Power ups
 const char* speedBoost[] = {
 	"000000000000",
 	"0          0",
@@ -679,6 +692,7 @@ const char* extraWallDebuff[] = {
 	"0   1  1   0",
 	"000000000000",
 };
+//
 
 float player_Answers = 0;
 internal void testQuestion(Input* input, int questionIndex, float dt) {
@@ -970,7 +984,7 @@ internal void testQuestionMultiplayer(Input* input, int questionIndex, int playe
 }
 u32 ballColor = 0xFF49B3;
 u32 slideColor = 0x6666FF * 2;
-float elapsedTime7 = 0.0;
+
 float intervalAppear = 3.0;
 u32 lower;
 u32 upper;
@@ -2876,6 +2890,7 @@ internal void pauseScreen(Input* input, float dt, int gamemode) {
 			playMusic2 = false;
 			playMusic5 = false;
 			playMusic1 = false;
+			playMusic6 = false;
 			answer.isCorrect = 0;
 			answer.question = false;
 			timer = 11;
@@ -3018,6 +3033,7 @@ internal void userUI(Input* input, float dt) {
 			draw_lowercase_letter("quit", -10, -20, 1, 0x888888);
 			if (pressed(BUTTON_ENTER)) {
 				gameplayTime++;
+				player_Tutorial_Score = 0;
 				current_gamemode = GM_TUTORIAL_SINGLE;
 			}
 		}
