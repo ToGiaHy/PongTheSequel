@@ -247,29 +247,29 @@ C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2672,43): warning C4305: 'argument
 C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2813,31): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2818,29): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2819,38): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2862,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2923,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2926,30): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2949,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2954,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2955,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3055,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3061,55): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3064,55): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3068,31): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3068,26): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3072,31): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3072,26): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3076,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3080,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3100,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3108,26): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3111,30): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3111,25): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3135,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3144,30): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3144,25): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3168,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2864,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2925,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2928,30): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2951,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2956,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(2957,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3057,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3063,55): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3066,55): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3070,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3070,26): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3074,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3074,26): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3078,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3082,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3102,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3110,26): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3113,30): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3113,25): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3137,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3146,30): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3146,25): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\Hy\source\repos\Pong2\Pong2\game.cpp(3170,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
 C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(25,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
 C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(28,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared
 C:\Users\Hy\source\repos\Pong2\Pong2\win32_platform.cpp(31,1): warning C4091: 'static ': ignored on left of 'int' when no variable is declared

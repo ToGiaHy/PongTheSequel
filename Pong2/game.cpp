@@ -2855,6 +2855,8 @@ internal void highScore(Input* input, float dt) {
 		}
 
 		draw_rect(30, player_3_p, player_half_size_x, 17, 0x8D155E);
+		render_ascii_art(extraWallDebuff, 9, 7, -80, -35, 1, 0x888888, 0x888888, 0x888888);
+		draw_text("EXTRA WALL", -65, -36.5, 0.5, 0x888888);
 	}
 }
 
