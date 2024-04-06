@@ -25,11 +25,11 @@ A C++ game designed to help ADHD patients learn educational concepts which can b
 
 Contributors names and contact info
 
-To Gia Hy 
-Vo Chau Thang
-Dang Kim Quang Minh
-Nguyen Gia Bao
-Loc Vu
+* To Gia Hy 
+* Vo Chau Thang
+* Dang Kim Quang Minh
+* Nguyen Gia Bao
+* Loc Vu
 
 ## Version History
 * 0.1
